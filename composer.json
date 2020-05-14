@@ -1,0 +1,35 @@
+{
+    "name": "bristol-su/data-entry",
+    "description": "A module for the Bristol SU Portal Project to allow entering and management of data in a given data structure",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Toby Twigger",
+            "email": "tobytwigger1@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.3",
+        "bristol-su/support": "^4.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "BristolSU\\Module\\DataEntry\\": "app/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BristolSU\\Module\\Tests\DataEntry\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "BristolSU\\Module\\DataEntry\\ModuleServiceProvider"
+            ]
+        }
+    }
+}
