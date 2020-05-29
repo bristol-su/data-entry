@@ -13,4 +13,9 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', 'AdminPageController@index');
+Route::namespace('Admin')->group(function() {
+    Route::get('/', 'PageController@index');
+    Route::get('/csv/activity-instance/{activity_instance}', 'CsvDownloadController@forActivityInstance');
+    Route::get('/csv', 'CsvDownloadController@forAll');
+    Route::get('/csv/template', 'CsvTemplateDownloadController@download');
+});

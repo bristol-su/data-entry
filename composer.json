@@ -9,8 +9,9 @@
         }
     ],
     "require": {
-        "php": "^7.3",
-        "bristol-su/support": "^4.0"
+        "php": "^7.4",
+        "bristol-su/support": "^4.0",
+        "league/csv": "^9.6"
     },
     "require-dev": {
         "orchestra/testbench": "^4.0"
@@ -22,7 +23,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "BristolSU\\Module\\Tests\DataEntry\\": "tests/"
+            "BristolSU\\Module\\Tests\\DataEntry\\": "tests/"
         }
     },
     "extra": {

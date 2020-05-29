@@ -7,12 +7,14 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12" style="text-align: center;">
-                    <h2 class="">Welcome</h2>
-                    <p class="">
-                        Welcome to your module! This is the administrator side
-                        
-                        <example-component></example-component>
-                    </p>
+                    <h2 class="">{{settings('title', '')}} - Admin</h2>
+                    <p class="">{{settings('subtitle', '')}}</p>
+
+                    <admin
+                        :column-schema="{{(settings('column_types', null) !== null ? json_encode(settings('column_types')) : '{}')}}"
+                        query-string="{{url()->getAuthQueryString()}}">
+
+                    </admin>
                 </div>
             </div>
         </div>
