@@ -2,7 +2,17 @@
 
 namespace BristolSU\Module\DataEntry;
 
+use BristolSU\Module\DataEntry\ColumnTypes\ColumnTypeStore;
+use BristolSU\Module\DataEntry\ColumnTypes\Date;
+use BristolSU\Module\DataEntry\ColumnTypes\Decimal;
+use BristolSU\Module\DataEntry\ColumnTypes\LongText;
+use BristolSU\Module\DataEntry\ColumnTypes\Number;
+use BristolSU\Module\DataEntry\ColumnTypes\Select;
+use BristolSU\Module\DataEntry\ColumnTypes\Text;
+use BristolSU\Module\DataEntry\Field\ColumnTypes;
 use BristolSU\Support\Module\ModuleServiceProvider as ServiceProvider;
+use FormSchema\Generator\Field;
+use FormSchema\Generator\Group;
 use FormSchema\Schema\Form;
 
 class ModuleServiceProvider extends ServiceProvider
@@ -14,11 +24,56 @@ class ModuleServiceProvider extends ServiceProvider
             'description' => 'View the main page of the module.',
             'admin' => false
         ],
+        'use-csv' => [
+            'name' => 'Use CSV Uploads',
+            'description' => 'Allow a user to upload a CSV',
+            'admin' => false
+        ],
+        'download-csv' => [
+            'name' => 'Download a CSV',
+            'description' => 'Allow a user to download a CSV of their answers',
+            'admin' => false
+        ],
+        'row.update' => [
+            'name' => 'Update a Row',
+            'description' => 'Allow a user to update a row',
+            'admin' => false
+        ],
+        'row.store' => [
+            'name' => 'Create a Row',
+            'description' => 'Allow a user to create a new row',
+            'admin' => false
+        ],
+        'row.delete' => [
+            'name' => 'Delete a Row',
+            'description' => 'Allow a user to delete a row',
+            'admin' => false
+        ],
         'admin.view-page' => [
             'name' => 'View Admin Page',
             'description' => 'View the administrator page of the module.',
             'admin' => true
-        ]
+        ],
+        'admin.download-csv' => [
+            'name' => 'Download CSV',
+            'description' => 'Allow downloading a CSV of inputted data',
+            'admin' => true
+        ],
+        'admin.row.update' => [
+            'name' => 'Update a Row',
+            'description' => 'Allow a user to update a row',
+            'admin' => true
+        ],
+        'admin.row.store' => [
+            'name' => 'Create a Row',
+            'description' => 'Allow a user to create a new row',
+            'admin' => true
+        ],
+        'admin.row.delete' => [
+            'name' => 'Delete a Row',
+            'description' => 'Allow a user to delete a row',
+            'admin' => true
+        ],
     ];
 
     protected $events = [
@@ -47,11 +102,19 @@ class ModuleServiceProvider extends ServiceProvider
     public function boot()
     {
         parent::boot();
+        $this->registerGlobalScript('modules/data-entry/js/components.js');
+        ColumnTypeStore::add('number', Number::class);
+        ColumnTypeStore::add('decimal', Decimal::class);
+        ColumnTypeStore::add('select', Select::class);
+        ColumnTypeStore::add('date', Date::class);
+        ColumnTypeStore::add('text', Text::class);
+        ColumnTypeStore::add('longtext', LongText::class);
     }
 
     public function register()
     {
         parent::register();
+        $this->app->singleton(ColumnTypeStore::class);
     }
 
     /**
@@ -59,6 +122,22 @@ class ModuleServiceProvider extends ServiceProvider
      */
     public function settings(): Form
     {
-        return \FormSchema\Generator\Form::make()->getSchema();
+        return \FormSchema\Generator\Form::make()->withGroup(
+            Group::make('Page Layout')->withField(
+                Field::input('title')->inputType('text')->label('Title')->featured(false)->required(true)
+                    ->default('Page Title')->hint('The title of the page')
+                    ->help('This title will be shown at the top of the page, to help users understand what the module is for')
+            )->withField(
+                Field::input('subtitle')->inputType('text')->label('Subtitle')->featured(false)->required(true)
+                    ->default('Page Subtitle')->hint('The subtitle for the page')
+                    ->help('This subtitle will be shown under the title, and should include more information for users')
+            )
+        )->withGroup(
+            Group::make('Data')->withField(
+                Field::make(ColumnTypes::class, 'column_types')
+                    ->label('Table Definition')
+            )
+        )->getSchema();
+            
     }
 }

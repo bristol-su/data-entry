@@ -13,4 +13,8 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', 'ParticipantPageController@index');
+Route::namespace('Participant')->group(function() {
+    Route::get('/', 'PageController@index');
+    Route::get('/csv/template', 'CsvTemplateDownloadController@download');
+    Route::get('/csv', 'CsvDownloadController@download');
+});
