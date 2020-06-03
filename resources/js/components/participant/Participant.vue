@@ -18,7 +18,7 @@
                     </b-form-input>
                     <template v-slot:append>
                         <b-input-group-text 
-                                style="border-left: 0; background-color: #ffffff"
+                                style="border-left: 0; background-color: #ffffff" 
                                 v-if="searchLoading" 
                                 label="Loading">
                             <b-spinner small></b-spinner>

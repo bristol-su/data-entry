@@ -18,7 +18,6 @@
                         :can-update-row="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('data-entry.row.update')?'true':'false')}}"
                         :can-store-row="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('data-entry.row.store')?'true':'false')}}"
                         :can-delete-row="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('data-entry.row.delete')?'true':'false')}}">
-                        
                     </participant>
                 </div>
             </div>

@@ -16,6 +16,8 @@ class RowController extends Controller
 
     public function index(Request $request)
     {
+        $this->authorize('view-page');
+        
         return Row::forResource()
             ->with('cells')
             ->when($request->has('search'), function(Builder $query) use ($request) {
@@ -31,6 +33,8 @@ class RowController extends Controller
 
     public function update(Activity $activity, ModuleInstance $moduleInstance, Row $row, RowStoreRequest $request)
     {
+        $this->authorize('row.update');
+
         foreach($request->input('fields') as $columnId => $value) {
             Cell::updateOrCreate(
                 ['row_id' => $row->id, 'column_id' => $columnId],
@@ -41,6 +45,8 @@ class RowController extends Controller
 
     public function store(RowStoreRequest $request)
     {
+        $this->authorize('row.store');
+
         $row = Row::create();
         
         foreach($request->input('fields') as $columnId => $value) {
@@ -56,6 +62,8 @@ class RowController extends Controller
 
     public function destroy(Activity $activity, ModuleInstance $moduleInstance, Row $row)
     {
+        $this->authorize('row.delete');
+
         $row->delete();
         return $row;
     }

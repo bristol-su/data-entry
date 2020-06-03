@@ -13,6 +13,8 @@ class CsvDownloadController extends Controller
 
     public function download()
     {
+        $this->authorize('download-csv');
+        
         $header = [];
         $colIds = collect();
         $schemas = settings('column_types', []);

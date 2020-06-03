@@ -23,6 +23,7 @@ class CellValidationController extends Controller
 
     public function validateCell(Activity $activity, ModuleInstance $moduleInstance, $rowId, Request $request)
     {
+        $this->authorize('view-page');
         $schemas = settings('column_types', []);
         if(array_key_exists($rowId, $schemas)) {
             $schema = $schemas[$rowId];

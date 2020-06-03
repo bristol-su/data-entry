@@ -18,6 +18,7 @@ class CsvUploadController extends Controller
 
     public function upload(Request $request)
     {
+        $this->authorize('use-csv');
         $request->validate(['file' => 'required|file']);
         $csv = Reader::createFromFileObject(new SplFileObject($request->file('file')->path()));
 

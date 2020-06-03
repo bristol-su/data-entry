@@ -11,6 +11,7 @@ class CsvTemplateDownloadController extends Controller
 
     public function download()
     {
+        $this->authorize('use-csv');
         $header = [];
         $schemas = settings('column_types', []);
         foreach($schemas as $rowId => $schema) {

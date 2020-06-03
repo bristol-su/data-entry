@@ -33,7 +33,7 @@ class RowController extends Controller
 
     public function destroy(Activity $activity, ModuleInstance $moduleInstance, Row $row)
     {
-        $this->authorize('admin.view-page');
+        $this->authorize('admin.row.delete');
 
         $row->delete();
         return $row;
@@ -41,7 +41,7 @@ class RowController extends Controller
 
     public function store(RowStoreRequest $request)
     {
-        $this->authorize('admin.view-page');
+        $this->authorize('admin.row.store');
 
         $row = Row::create(['activity_instance_id' => $request->input('activity_instance_id')]);
 
@@ -58,6 +58,8 @@ class RowController extends Controller
 
     public function update(Activity $activity, ModuleInstance $moduleInstance, Row $row, RowStoreRequest $request)
     {
+        $this->authorize('admin.row.update');
+        
         foreach($request->input('fields') as $columnId => $value) {
             Cell::updateOrCreate(
                 ['row_id' => $row->id, 'column_id' => $columnId],
