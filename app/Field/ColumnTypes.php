@@ -13,8 +13,10 @@ class ColumnTypes extends Field
     
     protected $globalValidation = [
         ['text' => 'Required', 'value' => 'required'],
+        ['text' => 'Optional', 'value' => 'optional'],
         ['text' => 'Minimum Value', 'value' => 'min:0'],
         ['text' => 'Maximum Value', 'value' => 'max:100'],
+        ['text' => 'Size is Between', 'value' => 'between:0,100']
     ];
     
     public function getAppendedAttributes(): array

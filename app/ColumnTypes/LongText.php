@@ -15,7 +15,8 @@ class LongText extends ColumnType
     public static function validation(): array
     {
         return [
-            ['text' => 'A Test', 'value' => 'test'],
+            ['text' => 'Starts With', 'value' => 'starts_with:option1,option2'],
+            ['text' => 'Ends With', 'value' => 'starts_with:option1,option2'],
         ];
     }
     

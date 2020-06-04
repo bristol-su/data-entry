@@ -15,7 +15,10 @@ class Date extends ColumnType
     public static function validation(): array
     {
         return [
-            ['text' => 'A Test', 'value' => 'test'],
+            ['text' => 'Past Date', 'value' => 'before:today'],
+            ['text' => 'Past Date (Including Today)', 'value' => 'before_or_equal:today'],
+            ['text' => 'Future Date', 'value' => 'after:today'],
+            ['text' => 'Future Date (Including Today)', 'value' => 'after_or_equal:today'],
         ];
     }
     
