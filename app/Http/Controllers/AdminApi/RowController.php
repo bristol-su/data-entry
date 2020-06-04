@@ -46,11 +46,13 @@ class RowController extends Controller
         $row = Row::create(['activity_instance_id' => $request->input('activity_instance_id')]);
 
         foreach($request->input('fields') as $columnId => $value) {
-            Cell::create([
-                'row_id' => $row->id,
-                'column_id' => $columnId,
-                'value' => $value,
-            ]);
+            if($value !== null) {
+                Cell::create([
+                    'row_id' => $row->id,
+                    'column_id' => $columnId,
+                    'value' => $value,
+                ]);
+            }
         }
 
         return $row->load('cells');
