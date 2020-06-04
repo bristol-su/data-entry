@@ -13,7 +13,7 @@ class ColumnTypes extends Field
     
     protected $globalValidation = [
         ['text' => 'Required', 'value' => 'required'],
-        ['text' => 'Optional', 'value' => 'optional'],
+        ['text' => 'Optional', 'value' => 'nullable'],
         ['text' => 'Minimum Value', 'value' => 'min:0'],
         ['text' => 'Maximum Value', 'value' => 'max:100'],
         ['text' => 'Size is Between', 'value' => 'between:0,100']
