@@ -21,7 +21,8 @@ class Text extends ColumnType
             ['text' => 'URL', 'value' => 'url'],
             ['text' => 'Active URL', 'value' => 'active_url'],
             ['text' => 'Email Address', 'value' => 'email'],
-            ['text' => 'IP Address', 'value' => 'ip']
+            ['text' => 'IP Address', 'value' => 'ip'],
+            ['text' => 'Regex Pattern', 'value' => 'regex:/^.+@.+$/i']
         ];
     }
     
