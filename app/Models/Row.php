@@ -2,12 +2,13 @@
 
 namespace BristolSU\Module\DataEntry\Models;
 
+use BristolSU\ControlDB\Contracts\Repositories\User;
 use BristolSU\Support\Authentication\Contracts\Authentication;
 use BristolSU\Support\Authentication\HasResource;
 use BristolSU\Support\Revision\HasRevisions;
-use BristolSU\Support\User\Contracts\UserAuthentication;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Row extends Model
@@ -29,6 +30,16 @@ class Row extends Model
             }
             return $row;
         });
+    }
+
+    /**
+     * @return \BristolSU\ControlDB\Contracts\Models\User
+     * 
+     * @throws ModelNotFoundException
+     */
+    public function createdBy()
+    {
+        return app(User::class)->getById($this->created_by);
     }
 
     public function scopeCurrentCell(Builder $query, $columnId)

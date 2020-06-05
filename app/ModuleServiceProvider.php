@@ -9,6 +9,9 @@ use BristolSU\Module\DataEntry\ColumnTypes\LongText;
 use BristolSU\Module\DataEntry\ColumnTypes\Number;
 use BristolSU\Module\DataEntry\ColumnTypes\Select;
 use BristolSU\Module\DataEntry\ColumnTypes\Text;
+use BristolSU\Module\DataEntry\Events\RowAdded;
+use BristolSU\Module\DataEntry\Events\RowDeleted;
+use BristolSU\Module\DataEntry\Events\RowUpdated;
 use BristolSU\Module\DataEntry\Field\ColumnTypes;
 use BristolSU\Support\Module\ModuleServiceProvider as ServiceProvider;
 use FormSchema\Generator\Field;
@@ -77,7 +80,18 @@ class ModuleServiceProvider extends ServiceProvider
     ];
 
     protected $events = [
-
+        RowAdded::class => [
+            'name' => 'Row Added',
+            'description' => 'When a new row is added'
+        ],
+        RowUpdated::class => [
+            'name' => 'Row Updated',
+            'description' => 'When a new row is updated'
+        ],
+        RowDeleted::class => [
+            'name' => 'Row Deleted',
+            'description' => 'When a new row is deleted'
+        ]
     ];
     
     protected $commands = [

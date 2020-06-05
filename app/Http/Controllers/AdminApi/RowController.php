@@ -2,6 +2,9 @@
 
 namespace BristolSU\Module\DataEntry\Http\Controllers\AdminApi;
 
+use BristolSU\Module\DataEntry\Events\RowAdded;
+use BristolSU\Module\DataEntry\Events\RowDeleted;
+use BristolSU\Module\DataEntry\Events\RowUpdated;
 use BristolSU\Module\DataEntry\Http\Controllers\Controller;
 use BristolSU\Module\DataEntry\Http\Requests\ParticipantApi\RowStoreRequest;
 use BristolSU\Module\DataEntry\Models\Cell;
@@ -10,6 +13,7 @@ use BristolSU\Support\Activity\Activity;
 use BristolSU\Support\ModuleInstance\ModuleInstance;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 
 class RowController extends Controller
 {
@@ -36,6 +40,8 @@ class RowController extends Controller
         $this->authorize('admin.row.delete');
 
         $row->delete();
+        Event::dispatch(new RowDeleted($row));
+        
         return $row;
     }
 
@@ -55,6 +61,8 @@ class RowController extends Controller
             }
         }
 
+        Event::dispatch(new RowAdded($row));
+
         return $row->load('cells');
     }
 
@@ -67,7 +75,11 @@ class RowController extends Controller
                 ['row_id' => $row->id, 'column_id' => $columnId],
                 ['value' => $value]);
         }
-        return $row->refresh()->load('cells');
+        $row->refresh();
+        
+        Event::dispatch(new RowUpdated($row));
+
+        return $row->load('cells');
     }
 
 }
