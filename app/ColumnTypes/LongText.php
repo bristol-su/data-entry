@@ -17,6 +17,7 @@ class LongText extends ColumnType
         return [
             ['text' => 'Starts With', 'value' => 'starts_with:option1,option2'],
             ['text' => 'Ends With', 'value' => 'starts_with:option1,option2'],
+            ['text' => 'Regex Pattern', 'value' => 'regex:/^.+@.+$/i']
         ];
     }
     
