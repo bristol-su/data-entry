@@ -143,17 +143,23 @@
                 return this.column !== null;
             },
             rules() {
-                let rules = this.globalRules;
-                if(this.column.type && this.fieldRules.hasOwnProperty(this.column.type)) {
-                    rules = rules.concat(this.fieldRules[this.column.type]);
+                if(this.hasColumn) {
+                    let rules = this.globalRules;
+                    if(this.column.type && this.fieldRules.hasOwnProperty(this.column.type)) {
+                        rules = rules.concat(this.fieldRules[this.column.type]);
+                    }
+                    return rules;
                 }
-                return rules;
+                return null;
             },
             visibleText() {
-                if(this.column.visible) {
-                    return 'Visible';
+                if(this.hasColumn) {
+                    if(this.column.visible) {
+                        return 'Visible';
+                    }
+                    return 'Hidden';    
                 }
-                return 'Hidden';
+                return null;
             },
             hasAdditionalConfiguration() {
                 return this.configuration !== null;
@@ -166,10 +172,13 @@
             },
             filledConfiguration: {
                 get() { 
-                    if(Array.isArray(this.column.configuration) && this.column.configuration.length === 0) {
-                        this.column.configuration = {};
+                    if(this.hasColumn) {
+                        if(Object.keys(this.column.configuration).length === 0) {
+                            this.column.configuration = {};
+                        }
+                        return VueFormGenerator.schema.createDefaultObject(this.configuration.schema, this.column.configuration);
                     }
-                    return VueFormGenerator.schema.createDefaultObject(this.configuration.schema, this.column.configuration);
+                    return null
                 },
                 set(val) {
                     this.column.configuration = val;

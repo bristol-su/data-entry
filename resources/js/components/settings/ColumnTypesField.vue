@@ -55,7 +55,6 @@
             appendColumn(uuid, column) {
                 this.$set(this.columns, uuid, column);
                 this.order.push(uuid);
-                this.$forceUpdate();
             }
         },
         
@@ -66,12 +65,10 @@
                 },
                 set(val) {
                     let cols = {};
-                    val.forEach((uuid, index) => {
-                        cols[uuid] = {
-                            ...this.columns[uuid],
-                            ...{order: index + 1}
-                        }
-                    })
+                    val.forEach((uuid, index) => this.$set(cols, uuid, {
+                    ...this.columns[uuid],
+                    ...{order: index + 1}
+                    }));
                     this.columns = cols;
                 },
                 cache: false
@@ -92,9 +89,7 @@
             orderedColumns: {
                 get() {
                     let cols = {};
-                    for(let i=0;i<this.order.length;i++) {
-                        cols[this.order[i]] = this.columns[this.order[i]];
-                    }
+                    this.order.forEach(uuid => this.$set(cols, uuid, this.columns[uuid]));
                     return cols;
                 },
                 cache: false
