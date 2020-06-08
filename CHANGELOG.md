@@ -7,10 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - (08/06/2020)
+
+### Changed
+- Make the cell value nullable in the database
+
 ## [1.0] - (08/06/2020)
 
 ### Added
 - Initial Release
 
-[Unreleased]: https://github.com/bristol-su/data-entry/compare/v1.0...HEAD
+[Unreleased]: https://github.com/bristol-su/data-entry/compare/v1.0.1...HEAD
+[1.0]: https://github.com/bristol-su/data-entry/compare/v1.0...v1.0.1
 [1.0]: https://github.com/bristol-su/data-entry/releases/tag/v1.0
