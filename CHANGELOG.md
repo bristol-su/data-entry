@@ -18,5 +18,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial Release
 
 [Unreleased]: https://github.com/bristol-su/data-entry/compare/v1.0.1...HEAD
-[1.0]: https://github.com/bristol-su/data-entry/compare/v1.0...v1.0.1
+[1.0.1]: https://github.com/bristol-su/data-entry/compare/v1.0...v1.0.1
 [1.0]: https://github.com/bristol-su/data-entry/releases/tag/v1.0
