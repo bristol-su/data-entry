@@ -25,7 +25,9 @@ class SetCellValueColumnToNullable extends Migration
      */
     public function down()
     {
-        \BristolSU\Module\DataEntry\Models\Cell::whereNull('value')->update(['value' => '']);
+        \Illuminate\Support\Facades\DB::table('data_entry_cell')
+            ->whereNull('value')
+            ->update(['value' => '']);
         Schema::table('data_entry_cell', function(Blueprint $table) {
             $table->text('value')->nullable(false)->change();
         });
