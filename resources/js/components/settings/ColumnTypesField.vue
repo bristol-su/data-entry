@@ -13,6 +13,7 @@
                         </column-create>
                     </template>
                 </column-selection>
+
             </b-col>
             <b-col>
                 <column-details 
@@ -54,6 +55,7 @@
             appendColumn(uuid, column) {
                 this.$set(this.columns, uuid, column);
                 this.order.push(uuid);
+                this.$forceUpdate();
             }
         },
         
@@ -71,7 +73,8 @@
                         }
                     })
                     this.columns = cols;
-                }
+                },
+                cache: false
             },
             columns: {
                 get() {
@@ -83,12 +86,18 @@
                 },
                 set(val) {
                     this.value = val;
-                }
+                },
+                cache: false
             },
-            orderedColumns() {
-                let cols = {};
-                this.order.forEach(uuid => cols[uuid] = this.columns[uuid]);
-                return cols;
+            orderedColumns: {
+                get() {
+                    let cols = {};
+                    for(let i=0;i<this.order.length;i++) {
+                        cols[this.order[i]] = this.columns[this.order[i]];
+                    }
+                    return cols;
+                },
+                cache: false
             },
             column: {
                 get() {
@@ -99,7 +108,8 @@
                 },
                 set(val) {
                     this.$set(this.columns, this.selectedUuid, val);
-                }
+                },
+                cache: false
             },
             fieldTypes() {
                 if(this.schema.fieldTypes) {
