@@ -32,9 +32,9 @@ class CsvDownloadController extends Controller
                 $cells = $row->cells->sortBy(function($value, $key) use ($colIds) {
                     return array_search($value->column_id, $colIds->toArray());
                 }, SORT_REGULAR);
-                return $colIds->map(function($colId) use (&$cells) {
-                    if(count($cells) > 0 && $cells[0]->column_id === $colId) {
-                        return $cells->shift()->value;
+                return $colIds->map(function($colId) use ($cells) {
+                    if($cell = $cells->where('column_id', $colId)->first()) {
+                        return $cell->value;
                     }
                     return null;
                 });
