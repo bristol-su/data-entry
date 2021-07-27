@@ -11,10 +11,11 @@
 |
 */
 
+use BristolSU\Module\DataEntry\Http\Controllers\Participant\CsvDownloadController;
+use BristolSU\Module\DataEntry\Http\Controllers\Participant\CsvTemplateDownloadController;
+use BristolSU\Module\DataEntry\Http\Controllers\Participant\PageController;
 use Illuminate\Support\Facades\Route;
 
-Route::namespace('Participant')->group(function() {
-    Route::get('/', 'PageController@index');
-    Route::get('/csv/template', 'CsvTemplateDownloadController@download');
-    Route::get('/csv', 'CsvDownloadController@download');
-});
+Route::get('/', [PageController::class, 'index']);
+Route::get('/csv/template', [CsvTemplateDownloadController::class, 'download']);
+Route::get('/csv', [CsvDownloadController::class, 'download']);

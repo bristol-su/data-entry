@@ -93,11 +93,11 @@ class ModuleServiceProvider extends ServiceProvider
             'description' => 'When a new row is deleted'
         ]
     ];
-    
+
     protected $commands = [
-        
+
     ];
-    
+
     public function alias(): string
     {
         return 'data-entry';
@@ -105,9 +105,9 @@ class ModuleServiceProvider extends ServiceProvider
 
     public function namespace()
     {
-        return '\BristolSU\Module\DataEntry\Http\Controllers';
+        return null;
     }
-    
+
     public function baseDirectory()
     {
         return __DIR__ . '/..';
@@ -152,6 +152,6 @@ class ModuleServiceProvider extends ServiceProvider
                     ->label('Table Definition')
             )
         )->getSchema();
-            
+
     }
 }

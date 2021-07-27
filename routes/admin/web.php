@@ -11,11 +11,10 @@
 |
 */
 
+use BristolSU\Module\DataEntry\Http\Controllers\Admin\CsvDownloadController;
+use BristolSU\Module\DataEntry\Http\Controllers\Admin\PageController;
 use Illuminate\Support\Facades\Route;
 
-Route::namespace('Admin')->group(function() {
-    Route::get('/', 'PageController@index');
-    Route::get('/csv/activity-instance/{activity_instance}', 'CsvDownloadController@forActivityInstance');
-    Route::get('/csv', 'CsvDownloadController@forAll');
-    Route::get('/csv/template', 'CsvTemplateDownloadController@download');
-});
+Route::get('/', [PageController::class, 'index']);
+Route::get('/csv/activity-instance/{activity_instance}', [CsvDownloadController::class, 'forActivityInstance']);
+Route::get('/csv', [CsvDownloadController::class, 'forAll']);

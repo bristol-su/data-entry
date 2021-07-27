@@ -11,7 +11,7 @@ class Cell extends Model
     use HasRevisions, SoftDeletes;
 
     protected $table = 'data_entry_cell';
-    
+
     protected $fillable = [
         'column_id',
         'value',
@@ -21,5 +21,16 @@ class Cell extends Model
     public function row()
     {
         return $this->belongsTo(Row::class);
+    }
+
+    /**
+     * Prepare a date for array / JSON serialization.
+     *
+     * @param  \DateTimeInterface  $date
+     * @return string
+     */
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
     }
 }

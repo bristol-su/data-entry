@@ -14,13 +14,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Row extends Model
 {
     use HasResource, SoftDeletes, HasRevisions;
-    
+
     protected $table = 'data_entry_row';
-    
+
     protected $fillable = [
         'activity_instance_id'
     ];
-    
+
     protected static function boot()
     {
         parent::boot();
@@ -34,7 +34,7 @@ class Row extends Model
 
     /**
      * @return \BristolSU\ControlDB\Contracts\Models\User
-     * 
+     *
      * @throws ModelNotFoundException
      */
     public function createdBy()
@@ -55,5 +55,16 @@ class Row extends Model
     public function activityInstance()
     {
         return $this->belongsTo(ActivityInstance::class);
+    }
+
+    /**
+     * Prepare a date for array / JSON serialization.
+     *
+     * @param  \DateTimeInterface  $date
+     * @return string
+     */
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
     }
 }
