@@ -138,18 +138,18 @@ class ModuleServiceProvider extends ServiceProvider
     {
         return \FormSchema\Generator\Form::make()->withGroup(
             Group::make('Page Layout')->withField(
-                Field::input('title')->inputType('text')->label('Title')->featured(false)->required(true)
-                    ->default('Page Title')->hint('The title of the page')
-                    ->help('This title will be shown at the top of the page, to help users understand what the module is for')
+                Field::textInput('title')->setLabel('Title')->setRequired(true)
+                    ->setValue('Page Title')->setHint('The title of the page')
+                    ->setTooltip('This title will be shown at the top of the page, to help users understand what the module is for')
             )->withField(
-                Field::input('subtitle')->inputType('text')->label('Subtitle')->featured(false)->required(true)
-                    ->default('Page Subtitle')->hint('The subtitle for the page')
-                    ->help('This subtitle will be shown under the title, and should include more information for users')
+                Field::textInput('subtitle')->setLabel('Subtitle')->setRequired(true)
+                    ->setValue('Page Subtitle')->setHint('The subtitle for the page')
+                    ->setTooltip('This subtitle will be shown under the title, and should include more information for users')
             )
         )->withGroup(
             Group::make('Data')->withField(
                 Field::make(ColumnTypes::class, 'column_types')
-                    ->label('Table Definition')
+                    ->setLabel('Table Definition')
             )
         )->getSchema();
 

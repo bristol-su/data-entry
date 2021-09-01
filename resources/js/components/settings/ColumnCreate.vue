@@ -1,14 +1,9 @@
 <template>
-    <b-list-group-item>
-        <b-form @submit.prevent="addCol">
-            <b-input-group>
-                <b-form-input v-model="header" placeholder="Column Header"></b-form-input>
-                <b-input-group-append>
-                    <b-button type="submit" variant="info"><i class="fa fa-plus"/></b-button>
-                </b-input-group-append>
-            </b-input-group>
-        </b-form>
-    </b-list-group-item>
+    <p-dynamic-form :schema="form" v-model="formData">
+        <template #append>
+            <p-button type="button" @click="addCol"><i class="fa fa-plus"/></p-button>
+        </template>
+    </p-dynamic-form>
 </template>
 
 <script>
@@ -21,7 +16,9 @@
 
         data() {
             return {
-                header: null,
+                formData: {
+                    header: null
+                },
                 defaultCol: {
                     header: null,
                     hint: null,
@@ -35,18 +32,28 @@
 
         methods: {
             addCol() {
-                if(!this.header) {
+                if(!this.formData.header) {
                     this.$notify.alert('Please type in the header for the field');
                 } else {
-                    let col = Object.assign({}, this.defaultCol, {header: this.header});
+                    let col = Object.assign({}, this.defaultCol, {header: this.formData.header});
                     let uuid = uuidv4();
                     this.$emit('create', uuid, col);
-                    this.header = null
+                    this.formData.header = null
                 }
             }
         },
 
-        computed: {}
+        computed: {
+            form() {
+                return this.$tools.generator.form.newForm()
+                    .withField(
+                        this.$tools.generator.field.text('header')
+                            .label('Column Header')
+                            .hint('What is the title for the column?')
+                            .required(true)
+                    )
+            }
+        }
     }
 </script>
 
