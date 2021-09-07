@@ -1,10 +1,12 @@
 <template>
-    <b-form-input
+    <p-number
+        :id="id"
+        :hint="hint"
+        :label="label"
+        :errors="errors"
         v-model="contents"
-        type="number"
         step="0.01"
-        :state="isValid"
-    ></b-form-input>
+    ></p-number>
 </template>
 
 <script>

@@ -25,44 +25,47 @@
         </b-row>
         <b-row>
             <b-col>
-                <participant-table
-                        :can-update-row="canUpdateRow"
-                        :can-store-row="canStoreRow"
-                        :can-delete-row="canDeleteRow"
-                        @editRow="editRow"
-                        @deleteRow="deleteRow"
-                        @newRow="showNewRow = true"
-                        :schema="schema"
-                        :items="rows"
-                        :page.sync="page"
-                        :per-page.sync="perPage"
-                        :total-pages.sync="totalPages"
-                        :loading="loading">
-                </participant-table>
+                <p-table
+                    :columns="fields"
+                    :total-count="rows.length"
+                    :items="processedItems"
+                    :editable="canUpdateRow"
+                    :deletable="canDeleteRow"
+                    @edit="editRow"
+                    @delete="deleteRow"
+                    @changePage="updatePageInformation"
+                >
+
+                    <template #cell()="{row}">
+                        <participant-table-cell :search="search" :value="row.value">
+
+                        </participant-table-cell>
+                    </template>
+                </p-table>
+
+                <p-button @click="$ui.modal.show('new-row')">Add Row</p-button>
             </b-col>
         </b-row>
         <b-row>
             <b-col>
-                <new-row
-                        :show.sync="showNewRow"
+                <p-modal id="new-row" title="Add a new row">
+                    <new-row-form
+                        :errors="errors"
+                        v-model="newRow"
                         :schema="schema"
-                        @submit="processNewRow"
-                        ref="newRow"
-                        :errors="errors">
-                </new-row>
+                        @submit="processNewRow">
+                    </new-row-form>
+                </p-modal>
             </b-col>
         </b-row>
     </div>
 </template>
 
 <script>
-    import ParticipantTable from '../participant/ParticipantTable';
     import {debounce} from 'lodash';
-    import NewRow from './../participant/NewRow';
-    
+
     export default {
         name: "ParticipantTableWrapper",
-        components: {NewRow, ParticipantTable},
         props: {
             activityInstance: {
                 required: false,
@@ -112,7 +115,7 @@
                 this.loadRows();
             }
         },
-        
+
         data() {
             return {
                 loading: false,
@@ -121,13 +124,16 @@
                 perPage: 15,
                 search: null,
                 rows: [],
-                showNewRow: false,
-                errors: {}
+                errors: {},
+                newRow: {}
             }
         },
 
         methods: {
-
+            updatePageInformation(pageData) {
+                this.page = pageData.page;
+                this.perPage = pageData.size;
+            },
             loadRows() {
                 this.loading = true;
                 this.$http.get('/activity-instance/' + this.activityInstance + '/row', {params: this.urlParams})
@@ -142,7 +148,7 @@
             },
             editRow(row) {
                 this.$refs.newRow.setRow(row)
-                this.showNewRow = true;
+                this.$ui.modal.show('new-row');
             },
             deleteRow(rowId) {
                 this.$bvModal.msgBoxConfirm('Are you sure you want to delete this row?', {
@@ -167,16 +173,16 @@
                         }
                     })
             },
-            processNewRow(newRow, stopLoading) {
-                if(newRow.hasOwnProperty('row_id')) {
-                    let row = Object.assign({}, newRow);
+            processNewRow() {
+                if(this.newRow.hasOwnProperty('row_id')) {
+                    let row = Object.assign({}, this.newRow);
                     delete row['row_id'];
-                    this.updateRow(newRow.row_id, row, stopLoading)
+                    this.updateRow(this.newRow.row_id, row)
                 } else {
-                    this.createNewRow(newRow, stopLoading);
+                    this.createNewRow(this.newRow);
                 }
             },
-            updateRow(id, row, stopLoading) {
+            updateRow(id, row) {
                 this.errors = {};
                 this.$http.patch('/row/' + id, {
                     fields: row
@@ -187,7 +193,7 @@
                             this.rows.indexOf(this.rows.find(item => item.id === id)),
                             1, response.data
                         );
-                        this.showNewRow = false;
+                        this.$ui.modal.hide('new-row');
                     })
                     .catch(error => {
                         if(error.response.status === 422) {
@@ -197,10 +203,9 @@
                         }
                     })
                     .then(() => {
-                        stopLoading()
                     });
             },
-            createNewRow(newRow, stopLoading) {
+            createNewRow(newRow) {
                 this.errors = {};
                 this.$http.post('/row', {
                     activity_instance_id: this.activityInstance,
@@ -209,7 +214,7 @@
                     .then(response => {
                         this.$notify.success('Row Added');
                         this.rows.unshift(response.data);
-                        this.showNewRow = false;
+                        this.$ui.modal.hide('new-row');
                     })
                     .catch(error => {
                         if(error.response.status === 422) {
@@ -219,7 +224,6 @@
                         }
                     })
                     .then(() => {
-                        stopLoading()
                     });
             }
         },
@@ -237,6 +241,30 @@
             },
             searchLoading() {
                 return this.search !== '' && this.search !== null && this.loading === true;
+            },
+            fields() {
+                return Object.keys(this.schema).filter(uuid => this.schema[uuid].visible)
+                    .sort((a, b) => this.schema[a].order - this.schema[b].order)
+                    .map(uuid => {
+                        let schema = this.schema[uuid]
+                        return {
+                            key: uuid,
+                            label: schema.header,
+                            hint: schema.hint,
+                            sortable: false
+                        }
+                    });
+            },
+            processedItems() {
+                return this.items.map(item => {
+                    let definition = {
+                        row_id: item.id
+                    };
+                    item.cells.forEach(cell => {
+                        definition[cell.column_id] = cell.value;
+                    })
+                    return definition;
+                })
             }
         }
     }

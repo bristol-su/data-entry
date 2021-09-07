@@ -46,10 +46,6 @@
                 required: true,
                 type: Boolean
             },
-            queryString: {
-                required: true,
-                type: String
-            },
             activityInstances: {
                 required: false,
                 type: Array,
@@ -90,11 +86,11 @@
                 }
             },
             downloadUrl() {
-                return this.$url
-                    + '/csv'
-                    + (this.download !== null ? '/activity-instance/' + this.download : '')
-                    + '?'
-                    + this.queryString;
+                return this.$tools.routes.query.addQueryStringToWebUrl(
+                    this.$tools.routes.module.moduleUrl()
+                        + '/csv'
+                        + (this.download !== null ? '/activity-instance/' + this.download : '')
+                    );
             },
             options() {
                 return [

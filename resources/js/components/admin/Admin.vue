@@ -15,9 +15,9 @@
 
                     </b-form-input>
                     <template v-slot:append>
-                        <b-input-group-text 
-                                style="border-left: 0; background-color: #ffffff" 
-                                v-if="searchLoading" 
+                        <b-input-group-text
+                                style="border-left: 0; background-color: #ffffff"
+                                v-if="searchLoading"
                                 label="Loading">
                             <b-spinner small></b-spinner>
                         </b-input-group-text>
@@ -48,7 +48,6 @@
             <b-col>
                 <csv-download
                     :show.sync="showCsvDownload"
-                    :query-string="queryString"
                     :activity-instances="items">
                 </csv-download>
             </b-col>
@@ -60,7 +59,7 @@
     import AdminTable from './AdminTable';
     import {debounce} from 'lodash';
     import CsvDownload from './CsvDownload';
-    
+
     export default {
         name: "Admin",
         components: {CsvDownload, AdminTable},
@@ -68,10 +67,6 @@
             columnSchema: {
                 required: true,
                 type: Object
-            },
-            queryString: {
-                required: true,
-                type: String
             },
             canDownloadCsv: {
                 required: true,
@@ -94,7 +89,7 @@
         created() {
             this.loadItems();
         },
-        
+
         data() {
             return {
                 items: [],
@@ -109,7 +104,7 @@
                 errors: {},
             }
         },
-        
+
         watch: {
             page() {
                 this.loadItems();
@@ -136,7 +131,7 @@
                 this.$http.get('/activity-instance', {
                     params: this.urlParams
                 })
-                    .then(response => { 
+                    .then(response => {
                         this.items = response.data.data
                         this.page = response.data.current_page;
                         this.totalPages = response.data.last_page;

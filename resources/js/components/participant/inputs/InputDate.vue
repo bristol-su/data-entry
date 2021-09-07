@@ -1,12 +1,11 @@
 <template>
-    <b-form-datepicker 
+    <p-date-picker
         v-model="contents"
-        :state="isValid"
-        today-button
-        reset-button
-        close-button
-        calendar-width="100%"
-    ></b-form-datepicker>
+        :id="id"
+        :hint="hint"
+        :label="label"
+        :errors="errors"
+    ></p-date-picker>
 </template>
 
 <script>

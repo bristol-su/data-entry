@@ -1,5 +1,5 @@
 <template>
-    <b-form @submit.stop.prevent="$emit('submit')">
+    <form @submit.stop.prevent="$emit('submit')">
         <new-row-form-cell
             v-for="uuid in orderedAndFilteredKeys"
             :key="uuid"
@@ -7,9 +7,11 @@
             :schema="schema[uuid]"
             v-model="form[uuid]"
             :errors="errors.hasOwnProperty('fields.' + uuid) ? errors['fields.' + uuid] : []">
-            
+
         </new-row-form-cell>
-    </b-form>
+
+        <p-button type="primary">Save</p-button>
+    </form>
 </template>
 
 <script>
