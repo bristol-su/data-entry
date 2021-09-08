@@ -95,26 +95,10 @@
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _AdminTable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AdminTable */ "./resources/js/components/admin/AdminTable.vue");
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
-/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _CsvDownload__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./CsvDownload */ "./resources/js/components/admin/CsvDownload.vue");
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _CsvDownload__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CsvDownload */ "./resources/js/components/admin/CsvDownload.vue");
+/* harmony import */ var _ParticipantTableWrapper__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ParticipantTableWrapper */ "./resources/js/components/admin/ParticipantTableWrapper.vue");
 //
 //
 //
@@ -162,8 +146,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "Admin",
   components: {
-    CsvDownload: _CsvDownload__WEBPACK_IMPORTED_MODULE_2__["default"],
-    AdminTable: _AdminTable__WEBPACK_IMPORTED_MODULE_0__["default"]
+    CsvDownload: _CsvDownload__WEBPACK_IMPORTED_MODULE_1__["default"],
+    ParticipantTableWrapper: _ParticipantTableWrapper__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
   props: {
     columnSchema: {
@@ -200,8 +184,15 @@ __webpack_require__.r(__webpack_exports__);
       sortDesc: false,
       loading: false,
       search: null,
-      showCsvDownload: false,
-      errors: {}
+      errors: {},
+      allFields: [{
+        key: 'participant_name',
+        label: 'Name'
+      }, {
+        key: 'rows_count',
+        label: 'Number of Rows'
+      }],
+      participantRow: null
     };
   },
   watch: {
@@ -218,12 +209,20 @@ __webpack_require__.r(__webpack_exports__);
       this.loadItems();
     },
     search: {
-      handler: Object(lodash__WEBPACK_IMPORTED_MODULE_1__["debounce"])(function () {
+      handler: Object(lodash__WEBPACK_IMPORTED_MODULE_0__["debounce"])(function () {
         this.loadItems();
       }, 500)
     }
   },
   methods: {
+    loadDetails: function loadDetails(row) {
+      this.participantRow = row;
+      this.$refs.tabs.selectTab(1);
+    },
+    updatePageInformation: function updatePageInformation(pageData) {
+      this.page = pageData.page;
+      this.perPage = pageData.size;
+    },
     loadItems: function loadItems() {
       var _this = this;
 
@@ -267,162 +266,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/AdminTable.vue?vue&type=script&lang=js&":
-/*!***************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/admin/AdminTable.vue?vue&type=script&lang=js& ***!
-  \***************************************************************************************************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _ParticipantTableWrapper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ParticipantTableWrapper */ "./resources/js/components/admin/ParticipantTableWrapper.vue");
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-  name: "AdminTable",
-  components: {
-    ParticipantTableWrapper: _ParticipantTableWrapper__WEBPACK_IMPORTED_MODULE_0__["default"]
-  },
-  props: {
-    schema: {
-      required: true,
-      type: Object
-    },
-    items: {
-      required: true,
-      type: Array
-    },
-    page: {
-      required: true,
-      type: Number
-    },
-    perPage: {
-      required: true,
-      type: Number
-    },
-    totalPages: {
-      required: true,
-      type: Number
-    },
-    loading: {
-      required: false,
-      type: Boolean,
-      "default": false
-    },
-    search: {
-      required: false,
-      type: String,
-      "default": null
-    },
-    canUpdateRow: {
-      required: true,
-      type: Boolean
-    },
-    canStoreRow: {
-      required: true,
-      type: Boolean
-    },
-    canDeleteRow: {
-      required: true,
-      type: Boolean
-    }
-  },
-  methods: {
-    loadDetails: function loadDetails(data) {
-      data.toggleDetails();
-      this.selectedActivityInstance = data.item.id;
-    }
-  },
-  data: function data() {
-    return {
-      pageOptions: [5, 10, 15, 20, 30, 40, 50],
-      fields: [{
-        key: 'name',
-        label: 'Name'
-      }, {
-        key: 'rows_count',
-        label: 'Number of Rows'
-      }, {
-        key: 'actions',
-        label: ''
-      }],
-      selectedActivityInstance: null
-    };
-  }
-});
-
-/***/ }),
-
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/CsvDownload.vue?vue&type=script&lang=js&":
 /*!****************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/admin/CsvDownload.vue?vue&type=script&lang=js& ***!
@@ -455,32 +298,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "CsvDownload",
@@ -488,10 +305,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     VSelect: vue_select__WEBPACK_IMPORTED_MODULE_0___default.a
   },
   props: {
-    show: {
-      required: true,
-      type: Boolean
-    },
     activityInstances: {
       required: false,
       type: Array,
@@ -506,39 +319,22 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     };
   },
   methods: {
-    handleOk: function handleOk(bvModalEvt) {
-      bvModalEvt.preventDefault();
-      this.handleSubmit();
-    },
     handleSubmit: function handleSubmit() {
-      this.loading = true; // Validate
-
       window.location.href = this.downloadUrl;
-    },
-    resetForm: function resetForm() {
-      this.newRow = {};
     }
   },
   computed: {
-    shouldShowModal: {
-      get: function get() {
-        return this.show;
-      },
-      set: function set(show) {
-        this.$emit('update:show', show);
-      }
-    },
     downloadUrl: function downloadUrl() {
       return this.$tools.routes.query.addQueryStringToWebUrl(this.$tools.routes.module.moduleUrl() + '/csv' + (this.download !== null ? '/activity-instance/' + this.download : ''));
     },
     options: function options() {
       return [{
-        label: 'All Data',
-        value: null
+        value: 'All Data',
+        id: null
       }].concat(_toConsumableArray(this.activityInstances.map(function (actInst) {
         return {
-          value: actInst.id,
-          label: actInst.resource_type === 'user' ? actInst.participant.data.first_name + ' ' + actInst.participant.data.last_name : actInst.resource_type === 'group' ? actInst.participant.data.name : actInst.participant.data.role_name
+          id: actInst.id,
+          value: actInst.resource_type === 'user' ? actInst.participant.data.first_name + ' ' + actInst.participant.data.last_name : actInst.resource_type === 'group' ? actInst.participant.data.name : actInst.participant.data.role_name
         };
       })));
     }
@@ -558,26 +354,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+/* harmony import */ var _participant_ParticipantTableCell__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../participant/ParticipantTableCell */ "./resources/js/components/participant/ParticipantTableCell.vue");
+/* harmony import */ var _participant_NewRowForm__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../participant/NewRowForm */ "./resources/js/components/participant/NewRowForm.vue");
 //
 //
 //
@@ -622,10 +400,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "ParticipantTableWrapper",
+  components: {
+    ParticipantTableCell: _participant_ParticipantTableCell__WEBPACK_IMPORTED_MODULE_1__["default"],
+    NewRowForm: _participant_NewRowForm__WEBPACK_IMPORTED_MODULE_2__["default"]
+  },
   props: {
-    activityInstance: {
+    activityInstanceId: {
       required: false,
       type: Number,
       "default": null
@@ -649,25 +433,25 @@ __webpack_require__.r(__webpack_exports__);
   },
   watch: {
     page: function page() {
-      if (this.activityInstance) {
+      if (this.activityInstanceId) {
         this.loadRows();
       }
     },
     perPage: function perPage() {
-      if (this.activityInstance) {
+      if (this.activityInstanceId) {
         this.loadRows();
       }
     },
     search: {
       handler: Object(lodash__WEBPACK_IMPORTED_MODULE_0__["debounce"])(function () {
-        if (this.activityInstance) {
+        if (this.activityInstanceId) {
           this.loadRows();
         }
       }, 500)
     }
   },
   mounted: function mounted() {
-    if (this.activityInstance) {
+    if (this.activityInstanceId) {
       this.loadRows();
     }
   },
@@ -692,7 +476,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       this.loading = true;
-      this.$http.get('/activity-instance/' + this.activityInstance + '/row', {
+      this.$http.get('/activity-instance/' + this.activityInstanceId + '/row', {
         params: this.urlParams
       }).then(function (response) {
         _this.rows = response.data.data;
@@ -705,32 +489,20 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     editRow: function editRow(row) {
-      this.$refs.newRow.setRow(row);
-      this.$ui.modal.show('new-row');
+      this.newRow = row;
+      this.$ui.modal.show('edit-row');
     },
-    deleteRow: function deleteRow(rowId) {
+    deleteRow: function deleteRow(row) {
       var _this2 = this;
 
-      this.$bvModal.msgBoxConfirm('Are you sure you want to delete this row?', {
-        title: 'Delete Row?',
-        size: 'sm',
-        buttonSize: 'sm',
-        okVariant: 'danger',
-        okTitle: 'YES',
-        cancelTitle: 'NO',
-        footerClass: 'p-2',
-        hideHeaderClose: false,
-        centered: true
-      }).then(function (value) {
-        if (value) {
-          _this2.$http["delete"]('/row/' + rowId).then(function (response) {
-            _this2.$notify.success('Row deleted');
+      this.$ui.confirm["delete"]('Delete row?', 'Are you sure you want to delete this row?').then(function () {
+        _this2.$http["delete"]('/row/' + row.row_id).then(function (response) {
+          _this2.$notify.success('Row deleted');
 
-            _this2.loadRows();
-          })["catch"](function (error) {
-            return _this2.$notify.alert('Could not delete row: ' + error.response.data.message);
-          });
-        }
+          _this2.loadRows();
+        })["catch"](function (error) {
+          return _this2.$notify.alert('Could not delete row: ' + error.response.data.message);
+        });
       });
     },
     processNewRow: function processNewRow() {
@@ -755,7 +527,9 @@ __webpack_require__.r(__webpack_exports__);
           return item.id === id;
         })), 1, response.data);
 
-        _this3.$ui.modal.hide('new-row');
+        _this3.newRow = null;
+
+        _this3.$ui.modal.hide('edit-row');
       })["catch"](function (error) {
         if (error.response.status === 422) {
           _this3.errors = error.response.data.errors;
@@ -769,7 +543,7 @@ __webpack_require__.r(__webpack_exports__);
 
       this.errors = {};
       this.$http.post('/row', {
-        activity_instance_id: this.activityInstance,
+        activity_instance_id: this.activityInstanceId,
         fields: newRow
       }).then(function (response) {
         _this4.$notify.success('Row Added');
@@ -777,6 +551,8 @@ __webpack_require__.r(__webpack_exports__);
         _this4.rows.unshift(response.data);
 
         _this4.$ui.modal.hide('new-row');
+
+        _this4.newRow = null;
       })["catch"](function (error) {
         if (error.response.status === 422) {
           _this4.errors = error.response.data.errors;
@@ -820,7 +596,7 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     processedItems: function processedItems() {
-      return this.items.map(function (item) {
+      return this.rows.map(function (item) {
         var definition = {
           row_id: item.id
         };
@@ -19757,316 +19533,73 @@ var render = function() {
   return _c(
     "div",
     [
-      _c(
-        "b-row",
-        [
-          _c(
-            "b-col",
-            [
-              _vm.canDownloadCsv
-                ? _c(
-                    "b-button",
-                    {
-                      attrs: { variant: "outline-secondary" },
-                      on: {
-                        click: function($event) {
-                          _vm.showCsvDownload = true
-                        }
-                      }
-                    },
-                    [_vm._v("Download CSV")]
-                  )
-                : _vm._e()
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c(
-            "b-col",
-            [
-              _c(
-                "b-input-group",
-                {
-                  scopedSlots: _vm._u([
-                    {
-                      key: "prepend",
-                      fn: function() {
-                        return [
-                          _c("b-input-group-text", [
-                            _c("i", { staticClass: "fa fa-search" })
-                          ])
-                        ]
-                      },
-                      proxy: true
-                    },
-                    {
-                      key: "append",
-                      fn: function() {
-                        return [
-                          _vm.searchLoading
-                            ? _c(
-                                "b-input-group-text",
-                                {
-                                  staticStyle: {
-                                    "border-left": "0",
-                                    "background-color": "#ffffff"
-                                  },
-                                  attrs: { label: "Loading" }
-                                },
-                                [_c("b-spinner", { attrs: { small: "" } })],
-                                1
-                              )
-                            : _vm._e()
-                        ]
-                      },
-                      proxy: true
-                    }
-                  ])
-                },
-                [
-                  _vm._v(" "),
-                  _c("b-form-input", {
-                    class: { "right-borderless": _vm.searchLoading },
-                    attrs: { type: "search", placeholder: "Type to Search" },
-                    model: {
-                      value: _vm.search,
-                      callback: function($$v) {
-                        _vm.search = $$v
-                      },
-                      expression: "search"
-                    }
-                  })
-                ],
-                1
-              )
-            ],
-            1
+      _vm.canDownloadCsv
+        ? _c(
+            "p-button",
+            {
+              attrs: { variant: "secondary" },
+              on: {
+                click: function($event) {
+                  return _vm.$ui.modal.show("csv-download")
+                }
+              }
+            },
+            [_vm._v("Download CSV")]
           )
-        ],
-        1
-      ),
+        : _vm._e(),
       _vm._v(" "),
       _c(
-        "b-row",
+        "p-tabs",
+        { ref: "tabs" },
         [
           _c(
-            "b-col",
+            "p-tab",
+            { attrs: { title: "All" } },
             [
-              _c("admin-table", {
+              _c("p-table", {
                 attrs: {
-                  "can-update-row": _vm.canUpdateRow,
-                  "can-store-row": _vm.canStoreRow,
-                  "can-delete-row": _vm.canDeleteRow,
-                  schema: _vm.columnSchema,
+                  columns: _vm.allFields,
                   items: _vm.items,
-                  page: _vm.page,
-                  "per-page": _vm.perPage,
-                  "total-pages": _vm.totalPages,
-                  "sort-by": _vm.sortBy,
-                  "sort-desc": _vm.sortDesc,
-                  search: _vm.search,
-                  loading: _vm.loading
+                  viewable: true
                 },
                 on: {
-                  "update:page": function($event) {
-                    _vm.page = $event
-                  },
-                  "update:perPage": function($event) {
-                    _vm.perPage = $event
-                  },
-                  "update:per-page": function($event) {
-                    _vm.perPage = $event
-                  },
-                  "update:totalPages": function($event) {
-                    _vm.totalPages = $event
-                  },
-                  "update:total-pages": function($event) {
-                    _vm.totalPages = $event
-                  },
-                  "update:sortBy": function($event) {
-                    _vm.sortBy = $event
-                  },
-                  "update:sort-by": function($event) {
-                    _vm.sortBy = $event
-                  },
-                  "update:sortDesc": function($event) {
-                    _vm.sortDesc = $event
-                  },
-                  "update:sort-desc": function($event) {
-                    _vm.sortDesc = $event
-                  }
-                }
-              })
-            ],
-            1
-          )
-        ],
-        1
-      ),
-      _vm._v(" "),
-      _c(
-        "b-row",
-        [
-          _c(
-            "b-col",
-            [
-              _c("csv-download", {
-                attrs: {
-                  show: _vm.showCsvDownload,
-                  "activity-instances": _vm.items
-                },
-                on: {
-                  "update:show": function($event) {
-                    _vm.showCsvDownload = $event
-                  }
-                }
-              })
-            ],
-            1
-          )
-        ],
-        1
-      )
-    ],
-    1
-  )
-}
-var staticRenderFns = []
-render._withStripped = true
-
-
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/AdminTable.vue?vue&type=template&id=5958cb6a&scoped=true&":
-/*!*******************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/admin/AdminTable.vue?vue&type=template&id=5958cb6a&scoped=true& ***!
-  \*******************************************************************************************************************************************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    [
-      _c(
-        "b-row",
-        [
-          _c(
-            "b-col",
-            [
-              _c("b-table", {
-                attrs: {
-                  fields: _vm.fields,
-                  items: _vm.items,
-                  "no-local-sorting": "",
-                  busy: _vm.loading
+                  changePage: _vm.updatePageInformation,
+                  view: _vm.loadDetails
                 },
                 scopedSlots: _vm._u([
                   {
-                    key: "table-busy",
-                    fn: function() {
-                      return [
-                        _c(
-                          "div",
-                          { staticClass: "text-center text-danger my-2" },
-                          [
-                            _c("b-spinner", { staticClass: "align-middle" }),
-                            _vm._v(" "),
-                            _c("strong", [_vm._v("Loading...")])
-                          ],
-                          1
-                        )
-                      ]
-                    },
-                    proxy: true
-                  },
-                  {
                     key: "cell(name)",
-                    fn: function(data) {
+                    fn: function(ref) {
+                      var row = ref.row
                       return [
-                        data.item.resource_type === "user"
+                        row.resource_type === "user"
                           ? _c("span", [
                               _vm._v(
-                                _vm._s(data.item.participant.data.first_name) +
+                                _vm._s(row.participant.data.first_name) +
                                   " " +
-                                  _vm._s(data.item.participant.data.last_name)
+                                  _vm._s(row.participant.data.last_name)
                               )
                             ])
                           : _vm._e(),
                         _vm._v(" "),
-                        data.item.resource_type === "group"
+                        row.resource_type === "group"
                           ? _c("span", [
-                              _vm._v(_vm._s(data.item.participant.data.name))
+                              _vm._v(_vm._s(row.participant.data.name))
                             ])
                           : _vm._e(),
                         _vm._v(" "),
-                        data.item.resource_type === "role"
+                        row.resource_type === "role"
                           ? _c("span", [
                               _vm._v(
-                                _vm._s(data.item.participant.data.role_name) +
+                                _vm._s(row.participant.data.role_name) +
                                   " (" +
-                                  _vm._s(
-                                    data.item.participant.data.position.name
-                                  ) +
+                                  _vm._s(row.participant.data.position.name) +
                                   " of " +
-                                  _vm._s(
-                                    data.item.participant.data.group.name
-                                  ) +
+                                  _vm._s(row.participant.data.group.name) +
                                   ")"
                               )
                             ])
                           : _vm._e()
-                      ]
-                    }
-                  },
-                  {
-                    key: "cell(actions)",
-                    fn: function(data) {
-                      return [
-                        _c(
-                          "b-button",
-                          {
-                            attrs: { size: "sm", variant: "outline-info" },
-                            on: {
-                              click: function($event) {
-                                return _vm.loadDetails(data)
-                              }
-                            }
-                          },
-                          [
-                            _c("i", {
-                              staticClass: "fa",
-                              class: {
-                                "fa-eye": !data.detailsShowing,
-                                "fa-eye-slash": data.detailsShowing
-                              }
-                            })
-                          ]
-                        )
-                      ]
-                    }
-                  },
-                  {
-                    key: "row-details",
-                    fn: function(row) {
-                      return [
-                        _c("participant-table-wrapper", {
-                          attrs: {
-                            "can-update-row": _vm.canUpdateRow,
-                            "can-store-row": _vm.canStoreRow,
-                            "can-delete-row": _vm.canDeleteRow,
-                            "activity-instance": row.item.id,
-                            schema: _vm.schema
-                          }
-                        })
                       ]
                     }
                   }
@@ -20074,65 +19607,34 @@ var render = function() {
               })
             ],
             1
+          ),
+          _vm._v(" "),
+          _c(
+            "p-tab",
+            { attrs: { title: "Single" } },
+            [
+              _vm.participantRow
+                ? _c("participant-table-wrapper", {
+                    attrs: {
+                      "can-update-row": _vm.canUpdateRow,
+                      "can-store-row": _vm.canStoreRow,
+                      "can-delete-row": _vm.canDeleteRow,
+                      "activity-instance-id": _vm.participantRow.activity_id,
+                      schema: _vm.columnSchema
+                    }
+                  })
+                : _vm._e()
+            ],
+            1
           )
         ],
         1
       ),
       _vm._v(" "),
       _c(
-        "b-row",
-        [
-          _c(
-            "b-col",
-            [
-              _c("b-pagination", {
-                attrs: {
-                  value: _vm.page,
-                  "total-rows": _vm.totalPages * _vm.perPage,
-                  "per-page": _vm.perPage,
-                  "first-text": "First",
-                  "prev-text": "Prev",
-                  "next-text": "Next",
-                  "last-text": "Last",
-                  align: "fill"
-                },
-                on: {
-                  input: function($event) {
-                    return _vm.$emit("update:page", $event)
-                  }
-                }
-              })
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c(
-            "b-col",
-            [
-              _c(
-                "b-form-group",
-                { attrs: { label: "Per page", "label-for": "perPageSelect" } },
-                [
-                  _c("b-form-select", {
-                    attrs: {
-                      value: _vm.perPage,
-                      id: "perPageSelect",
-                      size: "sm",
-                      options: _vm.pageOptions
-                    },
-                    on: {
-                      input: function($event) {
-                        return _vm.$emit("update:per-page", $event)
-                      }
-                    }
-                  })
-                ],
-                1
-              )
-            ],
-            1
-          )
-        ],
+        "p-modal",
+        { attrs: { title: "CSV Download", id: "csv-download" } },
+        [_c("csv-download", { attrs: { "activity-instances": _vm.items } })],
         1
       )
     ],
@@ -20162,97 +19664,36 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c(
-    "b-modal",
+    "form",
     {
-      attrs: { id: "new-row", scrollable: "", size: "xl", title: "Add Row" },
-      on: { hidden: _vm.resetForm, ok: _vm.handleOk },
-      model: {
-        value: _vm.shouldShowModal,
-        callback: function($$v) {
-          _vm.shouldShowModal = $$v
-        },
-        expression: "shouldShowModal"
+      on: {
+        submit: function($event) {
+          $event.stopPropagation()
+          $event.preventDefault()
+          return _vm.handleSubmit.apply(null, arguments)
+        }
       }
     },
     [
-      _c(
-        "div",
-        { staticStyle: { "padding-bottom": "30%" } },
-        [
-          _c(
-            "b-row",
-            [
-              _c("b-col", [
-                _c("h3", [_vm._v("Choose which data set to download")])
-              ])
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c(
-            "b-row",
-            [
-              _c(
-                "b-col",
-                {
-                  scopedSlots: _vm._u([
-                    {
-                      key: "modal-cancel",
-                      fn: function() {
-                        return [_c("span", [_vm._v("Cancel")])]
-                      },
-                      proxy: true
-                    },
-                    {
-                      key: "modal-ok",
-                      fn: function() {
-                        return [_c("span", [_vm._v("Save")])]
-                      },
-                      proxy: true
-                    }
-                  ])
-                },
-                [
-                  _c(
-                    "b-form",
-                    {
-                      on: {
-                        submit: function($event) {
-                          $event.stopPropagation()
-                          $event.preventDefault()
-                          return _vm.handleSubmit.apply(null, arguments)
-                        }
-                      }
-                    },
-                    [
-                      _c("v-select", {
-                        attrs: {
-                          reduce: function(option) {
-                            return option.value
-                          },
-                          options: _vm.options
-                        },
-                        model: {
-                          value: _vm.download,
-                          callback: function($$v) {
-                            _vm.download = $$v
-                          },
-                          expression: "download"
-                        }
-                      })
-                    ],
-                    1
-                  )
-                ],
-                1
-              )
-            ],
-            1
-          )
-        ],
-        1
-      )
-    ]
+      _c("p-select", {
+        attrs: {
+          id: "csv-data-set",
+          label: "What data set would you like to download?",
+          "select-options": _vm.options,
+          required: true
+        },
+        model: {
+          value: _vm.download,
+          callback: function($$v) {
+            _vm.download = $$v
+          },
+          expression: "download"
+        }
+      }),
+      _vm._v(" "),
+      _c("p-button", { attrs: { variant: "primary" } }, [_vm._v("Download")])
+    ],
+    1
   )
 }
 var staticRenderFns = []
@@ -20281,155 +19722,88 @@ var render = function() {
     "div",
     { staticStyle: { border: "2px solid black" } },
     [
+      _c("p-table", {
+        attrs: {
+          columns: _vm.fields,
+          "total-count": _vm.rows.length,
+          items: _vm.processedItems,
+          editable: _vm.canUpdateRow,
+          deletable: _vm.canDeleteRow
+        },
+        on: {
+          edit: _vm.editRow,
+          delete: _vm.deleteRow,
+          changePage: _vm.updatePageInformation
+        },
+        scopedSlots: _vm._u([
+          {
+            key: "cell()",
+            fn: function(ref) {
+              var row = ref.row
+              var column = ref.column
+              return [
+                _c("participant-table-cell", {
+                  attrs: {
+                    search: _vm.search,
+                    value: row.hasOwnProperty(column.key)
+                      ? row[column.key]
+                      : null
+                  }
+                })
+              ]
+            }
+          }
+        ])
+      }),
+      _vm._v(" "),
       _c(
-        "b-row",
+        "p-button",
+        {
+          on: {
+            click: function($event) {
+              return _vm.$ui.modal.show("new-row")
+            }
+          }
+        },
+        [_vm._v("Add Row")]
+      ),
+      _vm._v(" "),
+      _c(
+        "p-modal",
+        { attrs: { id: "new-row", title: "Add a new row" } },
         [
-          _c("b-col"),
-          _vm._v(" "),
-          _c(
-            "b-col",
-            [
-              _c(
-                "b-input-group",
-                {
-                  scopedSlots: _vm._u([
-                    {
-                      key: "prepend",
-                      fn: function() {
-                        return [
-                          _c("b-input-group-text", [
-                            _c("i", { staticClass: "fa fa-search" })
-                          ])
-                        ]
-                      },
-                      proxy: true
-                    },
-                    {
-                      key: "append",
-                      fn: function() {
-                        return [
-                          _vm.searchLoading
-                            ? _c(
-                                "b-input-group-text",
-                                {
-                                  staticStyle: {
-                                    "border-left": "0",
-                                    "background-color": "#ffffff"
-                                  },
-                                  attrs: { label: "Loading" }
-                                },
-                                [_c("b-spinner", { attrs: { small: "" } })],
-                                1
-                              )
-                            : _vm._e()
-                        ]
-                      },
-                      proxy: true
-                    }
-                  ])
-                },
-                [
-                  _vm._v(" "),
-                  _c("b-form-input", {
-                    class: { "right-borderless": _vm.searchLoading },
-                    attrs: { type: "search", placeholder: "Type to Search" },
-                    model: {
-                      value: _vm.search,
-                      callback: function($$v) {
-                        _vm.search = $$v
-                      },
-                      expression: "search"
-                    }
-                  })
-                ],
-                1
-              )
-            ],
-            1
-          )
+          _c("new-row-form", {
+            attrs: { errors: _vm.errors, schema: _vm.schema },
+            on: { submit: _vm.processNewRow },
+            model: {
+              value: _vm.newRow,
+              callback: function($$v) {
+                _vm.newRow = $$v
+              },
+              expression: "newRow"
+            }
+          })
         ],
         1
       ),
       _vm._v(" "),
       _c(
-        "b-row",
+        "p-modal",
+        { attrs: { id: "edit-row", title: "Edit a row" } },
         [
-          _c(
-            "b-col",
-            [
-              _c("p-table", {
-                attrs: {
-                  columns: _vm.fields,
-                  "total-count": _vm.rows.length,
-                  items: _vm.processedItems,
-                  editable: _vm.canUpdateRow,
-                  deletable: _vm.canDeleteRow
-                },
-                on: {
-                  edit: _vm.editRow,
-                  delete: _vm.deleteRow,
-                  changePage: _vm.updatePageInformation
-                },
-                scopedSlots: _vm._u([
-                  {
-                    key: "cell()",
-                    fn: function(ref) {
-                      var row = ref.row
-                      return [
-                        _c("participant-table-cell", {
-                          attrs: { search: _vm.search, value: row.value }
-                        })
-                      ]
-                    }
-                  }
-                ])
-              }),
-              _vm._v(" "),
-              _c(
-                "p-button",
-                {
-                  on: {
-                    click: function($event) {
-                      return _vm.$ui.modal.show("new-row")
-                    }
-                  }
-                },
-                [_vm._v("Add Row")]
-              )
-            ],
-            1
-          )
-        ],
-        1
-      ),
-      _vm._v(" "),
-      _c(
-        "b-row",
-        [
-          _c(
-            "b-col",
-            [
-              _c(
-                "p-modal",
-                { attrs: { id: "new-row", title: "Add a new row" } },
-                [
-                  _c("new-row-form", {
-                    attrs: { errors: _vm.errors, schema: _vm.schema },
-                    on: { submit: _vm.processNewRow },
-                    model: {
-                      value: _vm.newRow,
-                      callback: function($$v) {
-                        _vm.newRow = $$v
-                      },
-                      expression: "newRow"
-                    }
-                  })
-                ],
-                1
-              )
-            ],
-            1
-          )
+          _vm.newRow
+            ? _c("new-row-form", {
+                attrs: { errors: _vm.errors, schema: _vm.schema },
+                on: { submit: _vm.processNewRow },
+                model: {
+                  value: _vm.newRow,
+                  callback: function($$v) {
+                    _vm.newRow = $$v
+                  },
+                  expression: "newRow"
+                }
+              })
+            : _vm._e()
         ],
         1
       )
@@ -21355,75 +20729,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Admin_vue_vue_type_template_id_6ef557f4_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Admin_vue_vue_type_template_id_6ef557f4_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
-
-
-
-/***/ }),
-
-/***/ "./resources/js/components/admin/AdminTable.vue":
-/*!******************************************************!*\
-  !*** ./resources/js/components/admin/AdminTable.vue ***!
-  \******************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _AdminTable_vue_vue_type_template_id_5958cb6a_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AdminTable.vue?vue&type=template&id=5958cb6a&scoped=true& */ "./resources/js/components/admin/AdminTable.vue?vue&type=template&id=5958cb6a&scoped=true&");
-/* harmony import */ var _AdminTable_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AdminTable.vue?vue&type=script&lang=js& */ "./resources/js/components/admin/AdminTable.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-
-
-/* normalize component */
-
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
-  _AdminTable_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _AdminTable_vue_vue_type_template_id_5958cb6a_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _AdminTable_vue_vue_type_template_id_5958cb6a_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
-  false,
-  null,
-  "5958cb6a",
-  null
-  
-)
-
-/* hot reload */
-if (false) { var api; }
-component.options.__file = "resources/js/components/admin/AdminTable.vue"
-/* harmony default export */ __webpack_exports__["default"] = (component.exports);
-
-/***/ }),
-
-/***/ "./resources/js/components/admin/AdminTable.vue?vue&type=script&lang=js&":
-/*!*******************************************************************************!*\
-  !*** ./resources/js/components/admin/AdminTable.vue?vue&type=script&lang=js& ***!
-  \*******************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminTable_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./AdminTable.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/AdminTable.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminTable_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./resources/js/components/admin/AdminTable.vue?vue&type=template&id=5958cb6a&scoped=true&":
-/*!*************************************************************************************************!*\
-  !*** ./resources/js/components/admin/AdminTable.vue?vue&type=template&id=5958cb6a&scoped=true& ***!
-  \*************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminTable_vue_vue_type_template_id_5958cb6a_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./AdminTable.vue?vue&type=template&id=5958cb6a&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/AdminTable.vue?vue&type=template&id=5958cb6a&scoped=true&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminTable_vue_vue_type_template_id_5958cb6a_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AdminTable_vue_vue_type_template_id_5958cb6a_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

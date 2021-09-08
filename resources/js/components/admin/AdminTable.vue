@@ -1,38 +1,26 @@
 <template>
     <div>
-        <b-row>
-            <b-col>
-                <b-table
-                    :fields="fields"
+                <p-table
+                    :columns="fields"
                     :items="items"
-                    no-local-sorting
-                    :busy="loading">
-                    <template v-slot:table-busy>
-                        <div class="text-center text-danger my-2">
-                            <b-spinner class="align-middle"></b-spinner>
-                            <strong>Loading...</strong>
-                        </div>
+                    v-if="!loading"
+                    :viewable="true"
+                    @view="loadDetails(data)">
+                    <template v-slot:cell(name)="{row}">
+                        <span v-if="row.resource_type === 'user'">{{row.participant.data.first_name}} {{row.participant.data.last_name}}</span>
+                        <span v-if="row.resource_type === 'group'">{{row.participant.data.name}}</span>
+                        <span v-if="row.resource_type === 'role'">{{row.participant.data.role_name}} ({{row.participant.data.position.name}} of {{row.participant.data.group.name}})</span>
                     </template>
-                    <template v-slot:cell(name)="data">
-                        <span v-if="data.item.resource_type === 'user'">{{data.item.participant.data.first_name}} {{data.item.participant.data.last_name}}</span>
-                        <span v-if="data.item.resource_type === 'group'">{{data.item.participant.data.name}}</span>
-                        <span v-if="data.item.resource_type === 'role'">{{data.item.participant.data.role_name}} ({{data.item.participant.data.position.name}} of {{data.item.participant.data.group.name}})</span>
-                    </template>
-                    <template v-slot:cell(actions)="data">
-                        <b-button size="sm" variant="outline-info" @click="loadDetails(data)">
-                            <i class="fa" :class="{'fa-eye': !data.detailsShowing, 'fa-eye-slash': data.detailsShowing}" />
-                        </b-button>
-                    </template>
-                    <template v-slot:row-details="row">
-                        <participant-table-wrapper
-                            :can-update-row="canUpdateRow"
-                            :can-store-row="canStoreRow"
-                            :can-delete-row="canDeleteRow"
-                            :activity-instance="row.item.id"    
-                            :schema="schema">
-                        </participant-table-wrapper>
-                    </template>
-                </b-table>
+<!--                    <template v-slot:row-details="row">-->
+<!--                        <participant-table-wrapper-->
+<!--                            :can-update-row="canUpdateRow"-->
+<!--                            :can-store-row="canStoreRow"-->
+<!--                            :can-delete-row="canDeleteRow"-->
+<!--                            :activity-instance="row.item.id"-->
+<!--                            :schema="schema">-->
+<!--                        </participant-table-wrapper>-->
+<!--                    </template>-->
+                </p-table>
             </b-col>
         </b-row>
         <b-row>
@@ -64,13 +52,13 @@
                 </b-form-group>
             </b-col>
         </b-row>
-        
+
     </div>
 </template>
 
 <script>
     import ParticipantTableWrapper from './ParticipantTableWrapper';
-    
+
     export default {
         name: "AdminTable",
         components: {ParticipantTableWrapper},
@@ -125,7 +113,7 @@
                 this.selectedActivityInstance = data.item.id;
             }
         },
-       
+
         data() {
             return {
                 pageOptions: [5, 10, 15, 20, 30, 40, 50],
@@ -141,5 +129,5 @@
 </script>
 
 <style scoped>
-    
+
 </style>

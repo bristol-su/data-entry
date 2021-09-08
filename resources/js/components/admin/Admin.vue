@@ -1,68 +1,52 @@
 <template>
     <div>
-        <b-row>
-            <b-col>
-                <b-button variant="outline-secondary" @click="showCsvDownload = true" v-if="canDownloadCsv">Download CSV</b-button>
-            </b-col>
-            <b-col>
-                <b-input-group>
-                    <template v-slot:prepend>
-                        <b-input-group-text>
-                            <i class="fa fa-search" />
-                        </b-input-group-text>
-                    </template>
-                    <b-form-input v-model="search" type="search" placeholder="Type to Search" :class="{'right-borderless': searchLoading}">
+        <p-button variant="secondary" @click="$ui.modal.show('csv-download')" v-if="canDownloadCsv">Download CSV</p-button>
 
-                    </b-form-input>
-                    <template v-slot:append>
-                        <b-input-group-text
-                                style="border-left: 0; background-color: #ffffff"
-                                v-if="searchLoading"
-                                label="Loading">
-                            <b-spinner small></b-spinner>
-                        </b-input-group-text>
+        <p-tabs ref="tabs">
+            <p-tab title="All">
+                <p-table
+                    :columns="allFields"
+                    :items="items"
+                    :viewable="true"
+                    @changePage="updatePageInformation"
+                    @view="loadDetails"
+                >
+                    <template v-slot:cell(name)="{row}">
+                        <span v-if="row.resource_type === 'user'">{{row.participant.data.first_name}} {{row.participant.data.last_name}}</span>
+                        <span v-if="row.resource_type === 'group'">{{row.participant.data.name}}</span>
+                        <span v-if="row.resource_type === 'role'">{{row.participant.data.role_name}} ({{row.participant.data.position.name}} of {{row.participant.data.group.name}})</span>
                     </template>
-                </b-input-group>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <admin-table
-                        :can-update-row="canUpdateRow"
-                        :can-store-row="canStoreRow"
-                        :can-delete-row="canDeleteRow"
-                        :schema="columnSchema"
-                        :items="items"
-                        :page.sync="page"
-                        :per-page.sync="perPage"
-                        :total-pages.sync="totalPages"
-                        :sort-by.sync="sortBy"
-                        :sort-desc.sync="sortDesc"
-                        :search="search"
-                        :loading="loading">
+                </p-table>
+            </p-tab>
+            <p-tab title="Single">
+                <participant-table-wrapper
+                    v-if="participantRow"
+                    :can-update-row="canUpdateRow"
+                    :can-store-row="canStoreRow"
+                    :can-delete-row="canDeleteRow"
+                    :activity-instance-id="participantRow.activity_id"
+                    :schema="columnSchema">
+                </participant-table-wrapper>
+            </p-tab>
+        </p-tabs>
 
-                </admin-table>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <csv-download
-                    :show.sync="showCsvDownload"
-                    :activity-instances="items">
-                </csv-download>
-            </b-col>
-        </b-row>
+        <p-modal title="CSV Download" id="csv-download">
+            <csv-download
+                :activity-instances="items">
+            </csv-download>
+        </p-modal>
+
     </div>
 </template>
 
 <script>
-    import AdminTable from './AdminTable';
     import {debounce} from 'lodash';
     import CsvDownload from './CsvDownload';
+    import ParticipantTableWrapper from './ParticipantTableWrapper';
 
     export default {
         name: "Admin",
-        components: {CsvDownload, AdminTable},
+        components: {CsvDownload, ParticipantTableWrapper},
         props: {
             columnSchema: {
                 required: true,
@@ -100,8 +84,12 @@
                 sortDesc: false,
                 loading: false,
                 search: null,
-                showCsvDownload: false,
                 errors: {},
+                allFields: [
+                    {key: 'participant_name', label: 'Name'},
+                    {key: 'rows_count', label: 'Number of Rows'},
+                ],
+                participantRow: null
             }
         },
 
@@ -126,6 +114,14 @@
         },
 
         methods: {
+            loadDetails(row) {
+                this.participantRow = row;
+                this.$refs.tabs.selectTab(1);
+            },
+            updatePageInformation(pageData) {
+                this.page = pageData.page;
+                this.perPage = pageData.size;
+            },
             loadItems() {
                 this.loading = true;
                 this.$http.get('/activity-instance', {
