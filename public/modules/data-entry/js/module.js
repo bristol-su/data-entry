@@ -140,6 +140,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -958,6 +967,34 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _CsvUpload__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CsvUpload */ "./resources/js/components/participant/CsvUpload.vue");
 /* harmony import */ var _ParticipantTableCell__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ParticipantTableCell */ "./resources/js/components/participant/ParticipantTableCell.vue");
 /* harmony import */ var _NewRowForm__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./NewRowForm */ "./resources/js/components/participant/NewRowForm.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -19533,21 +19570,6 @@ var render = function() {
   return _c(
     "div",
     [
-      _vm.canDownloadCsv
-        ? _c(
-            "p-button",
-            {
-              attrs: { variant: "secondary" },
-              on: {
-                click: function($event) {
-                  return _vm.$ui.modal.show("csv-download")
-                }
-              }
-            },
-            [_vm._v("Download CSV")]
-          )
-        : _vm._e(),
-      _vm._v(" "),
       _c(
         "p-tabs",
         { ref: "tabs" },
@@ -19556,6 +19578,69 @@ var render = function() {
             "p-tab",
             { attrs: { title: "All" } },
             [
+              _c(
+                "div",
+                { staticClass: "flex justify-end gap-2 self-end mb-2 mt-5" },
+                [
+                  _c("span", [_vm._v("Actions: ")]),
+                  _vm._v(" "),
+                  _vm.canDownloadCsv
+                    ? _c(
+                        "a",
+                        {
+                          staticClass: "text-primary hover:text-primary-dark",
+                          on: {
+                            click: function($event) {
+                              return _vm.$ui.modal.show("csv-download")
+                            }
+                          }
+                        },
+                        [
+                          _c(
+                            "svg",
+                            {
+                              directives: [
+                                {
+                                  name: "tippy",
+                                  rawName: "v-tippy",
+                                  value: {
+                                    arrow: true,
+                                    animation: "fade",
+                                    placement: "top-start",
+                                    arrow: true,
+                                    interactive: true
+                                  },
+                                  expression:
+                                    "{ arrow: true, animation: 'fade', placement: 'top-start', arrow: true, interactive: true}"
+                                }
+                              ],
+                              staticClass: "h-6 w-6",
+                              attrs: {
+                                xmlns: "http://www.w3.org/2000/svg",
+                                fill: "none",
+                                viewBox: "0 0 24 24",
+                                stroke: "currentColor",
+                                content: "Download CSV"
+                              }
+                            },
+                            [
+                              _c("path", {
+                                attrs: {
+                                  "stroke-linecap": "round",
+                                  "stroke-linejoin": "round",
+                                  "stroke-width": "2",
+                                  d:
+                                    "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                                }
+                              })
+                            ]
+                          )
+                        ]
+                      )
+                    : _vm._e()
+                ]
+              ),
+              _vm._v(" "),
               _c("p-table", {
                 attrs: {
                   columns: _vm.allFields,
@@ -20001,61 +20086,187 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _c(
-      "div",
-      [
+    _c("div", { staticClass: "flex justify-between" }, [
+      _c(
+        "div",
+        { staticClass: "w-1/3" },
+        [
+          _c("p-text-input", {
+            attrs: { id: "search", label: "Search", hint: "Type to search" },
+            model: {
+              value: _vm.search,
+              callback: function($$v) {
+                _vm.search = $$v
+              },
+              expression: "search"
+            }
+          })
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "flex justify-end gap-2 self-end mb-2" }, [
+        _c("span", [_vm._v("Actions: ")]),
+        _vm._v(" "),
         _vm.downloadCsv
           ? _c(
-              "p-button",
-              { attrs: { variant: "outline-secondary", href: _vm.csvUrl } },
-              [_vm._v("Download CSV")]
-            )
-          : _vm._e(),
-        _vm._v(" "),
-        _vm.useCsv
-          ? _c(
-              "p-button",
+              "a",
               {
-                attrs: { variant: "outline-secondary", href: _vm.templateUrl }
+                staticClass: "text-primary hover:text-primary-dark",
+                attrs: { href: _vm.csvUrl }
               },
-              [_vm._v("Download CSV Template")]
+              [
+                _c(
+                  "svg",
+                  {
+                    directives: [
+                      {
+                        name: "tippy",
+                        rawName: "v-tippy",
+                        value: {
+                          arrow: true,
+                          animation: "fade",
+                          placement: "top-start",
+                          arrow: true,
+                          interactive: true
+                        },
+                        expression:
+                          "{ arrow: true, animation: 'fade', placement: 'top-start', arrow: true, interactive: true}"
+                      }
+                    ],
+                    staticClass: "h-6 w-6",
+                    attrs: {
+                      xmlns: "http://www.w3.org/2000/svg",
+                      fill: "none",
+                      viewBox: "0 0 24 24",
+                      stroke: "currentColor",
+                      content: "Download CSV"
+                    }
+                  },
+                  [
+                    _c("path", {
+                      attrs: {
+                        "stroke-linecap": "round",
+                        "stroke-linejoin": "round",
+                        "stroke-width": "2",
+                        d:
+                          "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                      }
+                    })
+                  ]
+                )
+              ]
             )
           : _vm._e(),
         _vm._v(" "),
         _vm.useCsv
           ? _c(
-              "p-button",
+              "a",
               {
-                attrs: { variant: "outline-secondary" },
+                staticClass: "text-secondary hover:text-secondary-dark",
+                attrs: { href: _vm.templateUrl }
+              },
+              [
+                _c(
+                  "svg",
+                  {
+                    directives: [
+                      {
+                        name: "tippy",
+                        rawName: "v-tippy",
+                        value: {
+                          arrow: true,
+                          animation: "fade",
+                          placement: "top-start",
+                          arrow: true,
+                          interactive: true
+                        },
+                        expression:
+                          "{ arrow: true, animation: 'fade', placement: 'top-start', arrow: true, interactive: true}"
+                      }
+                    ],
+                    staticClass: "h-6 w-6",
+                    attrs: {
+                      xmlns: "http://www.w3.org/2000/svg",
+                      fill: "none",
+                      viewBox: "0 0 24 24",
+                      stroke: "currentColor",
+                      content: "Download CSV Template"
+                    }
+                  },
+                  [
+                    _c("path", {
+                      attrs: {
+                        "stroke-linecap": "round",
+                        "stroke-linejoin": "round",
+                        "stroke-width": "2",
+                        d:
+                          "M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      }
+                    })
+                  ]
+                )
+              ]
+            )
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.useCsv
+          ? _c(
+              "a",
+              {
+                staticClass: "text-info hover:text-info-dark",
+                attrs: { href: "#" },
                 on: {
                   click: function($event) {
                     return _vm.$ui.modal.show("upload-csv")
                   }
                 }
               },
-              [_vm._v("Upload CSV")]
+              [
+                _c(
+                  "svg",
+                  {
+                    directives: [
+                      {
+                        name: "tippy",
+                        rawName: "v-tippy",
+                        value: {
+                          arrow: true,
+                          animation: "fade",
+                          placement: "top-start",
+                          arrow: true,
+                          interactive: true
+                        },
+                        expression:
+                          "{ arrow: true, animation: 'fade', placement: 'top-start', arrow: true, interactive: true}"
+                      }
+                    ],
+                    staticClass: "h-6 w-6",
+                    attrs: {
+                      xmlns: "http://www.w3.org/2000/svg",
+                      fill: "none",
+                      viewBox: "0 0 24 24",
+                      stroke: "currentColor",
+                      content: "Upload CSV File"
+                    }
+                  },
+                  [
+                    _c("path", {
+                      attrs: {
+                        "stroke-linecap": "round",
+                        "stroke-linejoin": "round",
+                        "stroke-width": "2",
+                        d:
+                          "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                      }
+                    })
+                  ]
+                )
+              ]
             )
           : _vm._e()
-      ],
-      1
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      [
-        _c("p-text-input", {
-          attrs: { id: "search", label: "Search", hint: "Type to search" },
-          model: {
-            value: _vm.search,
-            callback: function($$v) {
-              _vm.search = $$v
-            },
-            expression: "search"
-          }
-        })
-      ],
-      1
-    ),
+      ])
+    ]),
     _vm._v(" "),
     _c(
       "div",
@@ -20094,17 +20305,26 @@ var render = function() {
           ])
         }),
         _vm._v(" "),
-        _c(
-          "p-button",
-          {
-            on: {
-              click: function($event) {
-                return _vm.$ui.modal.show("new-row")
-              }
-            }
-          },
-          [_vm._v("Add Row")]
-        )
+        _c("div", { staticClass: "flex justify-end" }, [
+          _c(
+            "div",
+            { staticClass: "w-1/3" },
+            [
+              _c(
+                "p-button",
+                {
+                  on: {
+                    click: function($event) {
+                      return _vm.$ui.modal.show("new-row")
+                    }
+                  }
+                },
+                [_vm._v("Add new Row")]
+              )
+            ],
+            1
+          )
+        ])
       ],
       1
     ),
@@ -21772,8 +21992,8 @@ var vue = new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /mnt/5F242F4A45A0248A/development/bristolsu/portal/portal-sites/playground/repos/bristol-su/data-entry/resources/js/module.js */"./resources/js/module.js");
-module.exports = __webpack_require__(/*! /mnt/5F242F4A45A0248A/development/bristolsu/portal/portal-sites/playground/repos/bristol-su/data-entry/resources/sass/module.scss */"./resources/sass/module.scss");
+__webpack_require__(/*! /Users/aidanlaycock/Desktop/ElbowSpace/Portal/portal-ui-dev/repos/data-entry/resources/js/module.js */"./resources/js/module.js");
+module.exports = __webpack_require__(/*! /Users/aidanlaycock/Desktop/ElbowSpace/Portal/portal-ui-dev/repos/data-entry/resources/sass/module.scss */"./resources/sass/module.scss");
 
 
 /***/ }),

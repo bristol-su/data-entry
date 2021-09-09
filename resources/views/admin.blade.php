@@ -11,7 +11,6 @@
             :can-update-row="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('data-entry.admin.row.update')?'true':'false')}}"
             :can-store-row="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('data-entry.admin.row.store')?'true':'false')}}"
             :can-delete-row="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('data-entry.admin.row.delete')?'true':'false')}}">
-
         </admin>
     </p-page-content>
 @endsection
