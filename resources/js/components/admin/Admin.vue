@@ -1,9 +1,18 @@
 <template>
     <div>
-        <p-button variant="secondary" @click="$ui.modal.show('csv-download')" v-if="canDownloadCsv">Download CSV</p-button>
-
         <p-tabs ref="tabs">
             <p-tab title="All">
+                <div class="flex justify-end gap-2 self-end mb-2 mt-5">
+                    <span>Actions: </span>
+                    <a @click="$ui.modal.show('csv-download')" v-if="canDownloadCsv" class="text-primary hover:text-primary-dark">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                             content="Download CSV"
+                             v-tippy="{ arrow: true, animation: 'fade', placement: 'top-start', arrow: true, interactive: true}"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                    </a>
+                </div>
                 <p-table
                     :columns="allFields"
                     :items="items"
