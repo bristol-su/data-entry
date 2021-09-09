@@ -33,7 +33,7 @@
                     :can-update-row="canUpdateRow"
                     :can-store-row="canStoreRow"
                     :can-delete-row="canDeleteRow"
-                    :activity-instance-id="participantRow.activity_id"
+                    :activity-instance-id="participantRow.id"
                     :schema="columnSchema">
                 </participant-table-wrapper>
             </p-tab>
