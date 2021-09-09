@@ -408,6 +408,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 
 
 
@@ -19704,7 +19708,7 @@ var render = function() {
                       "can-update-row": _vm.canUpdateRow,
                       "can-store-row": _vm.canStoreRow,
                       "can-delete-row": _vm.canDeleteRow,
-                      "activity-instance-id": _vm.participantRow.activity_id,
+                      "activity-instance-id": _vm.participantRow.id,
                       schema: _vm.columnSchema
                     }
                   })
@@ -19805,7 +19809,6 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticStyle: { border: "2px solid black" } },
     [
       _c("p-table", {
         attrs: {
@@ -19841,17 +19844,26 @@ var render = function() {
         ])
       }),
       _vm._v(" "),
-      _c(
-        "p-button",
-        {
-          on: {
-            click: function($event) {
-              return _vm.$ui.modal.show("new-row")
-            }
-          }
-        },
-        [_vm._v("Add Row")]
-      ),
+      _c("div", { staticClass: "flex justify-end" }, [
+        _c(
+          "div",
+          { staticClass: "w-1/2" },
+          [
+            _c(
+              "p-button",
+              {
+                on: {
+                  click: function($event) {
+                    return _vm.$ui.modal.show("new-row")
+                  }
+                }
+              },
+              [_vm._v("Add Row")]
+            )
+          ],
+          1
+        )
+      ]),
       _vm._v(" "),
       _c(
         "p-modal",

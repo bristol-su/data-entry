@@ -1,5 +1,5 @@
 <template>
-    <div style="border: 2px solid black">
+    <div>
         <p-table
             :columns="fields"
             :total-count="rows.length"
@@ -18,7 +18,11 @@
             </template>
         </p-table>
 
-        <p-button @click="$ui.modal.show('new-row')">Add Row</p-button>
+        <div class="flex justify-end">
+            <div class="w-1/2">
+                <p-button @click="$ui.modal.show('new-row')">Add Row</p-button>
+            </div>
+        </div>
 
         <p-modal id="new-row" title="Add a new row">
             <new-row-form
