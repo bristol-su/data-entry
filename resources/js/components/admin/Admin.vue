@@ -36,6 +36,9 @@
                     :activity-instance-id="participantRow.id"
                     :schema="columnSchema">
                 </participant-table-wrapper>
+                <span v-else>
+                    Please select which submission to view from the 'All' tab.
+                </span>
             </p-tab>
         </p-tabs>
 

@@ -8,29 +8,32 @@
             </div>
             <div class="flex justify-end gap-2 self-end mb-2">
                 <span>Actions: </span>
-                <a :href="csvUrl" v-if="downloadCsv" class="text-primary hover:text-primary-dark">
+                <a :href="csvUrl" v-if="downloadCsv" class="text-primary hover:text-primary-dark" role="button">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                          content="Download CSV"
                          v-tippy="{ arrow: true, animation: 'fade', placement: 'top-start', arrow: true, interactive: true}"
                     >
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
+                    <span class="sr-only">Download CSV</span>
                 </a>
-                <a :href="templateUrl" v-if="useCsv" class="text-secondary hover:text-secondary-dark">
+                <a :href="templateUrl" v-if="useCsv" class="text-secondary hover:text-secondary-dark" role="button">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                          content="Download CSV Template"
                          v-tippy="{ arrow: true, animation: 'fade', placement: 'top-start', arrow: true, interactive: true}"
                     >
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
+                    <span class="sr-only">Download CSV Template</span>
                 </a>
-                <a href="#" @click="$ui.modal.show('upload-csv')" v-if="useCsv" class="text-info hover:text-info-dark">
+                <a href="#" @click="$ui.modal.show('upload-csv')" v-if="useCsv" class="text-info hover:text-info-dark" role="button">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                         content="Upload CSV File"
+                         content="Upload CSV"
                          v-tippy="{ arrow: true, animation: 'fade', placement: 'top-start', arrow: true, interactive: true}"
                     >
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                     </svg>
+                    <span class="sr-only">Upload CSV</span>
                 </a>
             </div>
         </div>
@@ -83,8 +86,9 @@
         <div>
             <p-modal id="upload-csv" title="Add via CSV">
                 <csv-upload
-                    @submit="uploadCsv"
-                    :errors="csvErrors">
+                    @uploaded="loadItems"
+                    @hide="$ui.modal.hide('upload-csv')"
+                >
                 </csv-upload>
             </p-modal>
 
@@ -142,7 +146,6 @@ export default {
             loading: false,
             search: null,
             errors: {},
-            csvErrors: {},
             newRow: {}
         }
     },
@@ -245,26 +248,6 @@ export default {
                 })
                 .then(() => {
                 });
-        },
-        uploadCsv(csv) {
-            this.csvErrors = {};
-            let formData = new FormData();
-            formData.append('file', csv);
-
-            this.$http.post('/csv', formData)
-                .then(response => {
-                    this.$notify.success('Csv Processed');
-                    this.loadItems();
-                    this.$ui.modal.hide('upload-csv');
-                })
-                .catch(error => {
-                    if (error.response.status === 422) {
-                        this.csvErrors = error.response.data.errors;
-                    } else {
-                        this.$notify.alert('Csv could not be processed: ' + error.response.data.message);
-                    }
-                })
-                .then(() => {});
         }
     },
 

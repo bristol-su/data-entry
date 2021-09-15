@@ -2,7 +2,7 @@
     <div>
         <p-table
             :columns="fields"
-            :total-count="rows.length"
+            :total-count="totalCount"
             :items="processedItems"
             :editable="canUpdateRow"
             :deletable="canDeleteRow"
@@ -106,9 +106,9 @@ export default {
     data() {
         return {
             loading: false,
-            totalPages: 1,
+            totalCount: 1,
             page: 1,
-            perPage: 15,
+            perPage: 5,
             search: null,
             rows: [],
             errors: {},
@@ -127,7 +127,7 @@ export default {
                 .then(response => {
                     this.rows = response.data.data
                     this.page = response.data.current_page;
-                    this.totalPages = response.data.last_page;
+                    this.totalCount = response.data.total;
                 })
                 .catch(error => this.$notify.alert('Could not load the rows: ' + error.response.data.message))
                 .then(() => this.loading = false);

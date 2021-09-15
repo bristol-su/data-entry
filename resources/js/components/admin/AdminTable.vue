@@ -11,15 +11,6 @@
                         <span v-if="row.resource_type === 'group'">{{row.participant.data.name}}</span>
                         <span v-if="row.resource_type === 'role'">{{row.participant.data.role_name}} ({{row.participant.data.position.name}} of {{row.participant.data.group.name}})</span>
                     </template>
-<!--                    <template v-slot:row-details="row">-->
-<!--                        <participant-table-wrapper-->
-<!--                            :can-update-row="canUpdateRow"-->
-<!--                            :can-store-row="canStoreRow"-->
-<!--                            :can-delete-row="canDeleteRow"-->
-<!--                            :activity-instance="row.item.id"-->
-<!--                            :schema="schema">-->
-<!--                        </participant-table-wrapper>-->
-<!--                    </template>-->
                 </p-table>
             </b-col>
         </b-row>

@@ -9,10 +9,12 @@ use BristolSU\Module\DataEntry\ColumnTypes\LongText;
 use BristolSU\Module\DataEntry\ColumnTypes\Number;
 use BristolSU\Module\DataEntry\ColumnTypes\Select;
 use BristolSU\Module\DataEntry\ColumnTypes\Text;
+use BristolSU\Module\DataEntry\CompletionConditions\NumberOfRowsEntered;
 use BristolSU\Module\DataEntry\Events\RowAdded;
 use BristolSU\Module\DataEntry\Events\RowDeleted;
 use BristolSU\Module\DataEntry\Events\RowUpdated;
 use BristolSU\Module\DataEntry\Field\ColumnTypes;
+use BristolSU\Support\Completion\Contracts\CompletionConditionManager;
 use BristolSU\Support\Module\ModuleServiceProvider as ServiceProvider;
 use FormSchema\Generator\Field;
 use FormSchema\Generator\Group;
@@ -98,6 +100,10 @@ class ModuleServiceProvider extends ServiceProvider
 
     ];
 
+    protected $completionConditions = [
+        'number_of_rows_entered' => NumberOfRowsEntered::class
+    ];
+
     public function alias(): string
     {
         return 'data-entry';
@@ -117,6 +123,7 @@ class ModuleServiceProvider extends ServiceProvider
     {
         parent::boot();
         $this->registerGlobalScript('modules/data-entry/js/components.js');
+
         ColumnTypeStore::add('number', Number::class);
         ColumnTypeStore::add('decimal', Decimal::class);
         ColumnTypeStore::add('select', Select::class);
