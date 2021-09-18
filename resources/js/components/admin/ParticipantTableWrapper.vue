@@ -6,6 +6,7 @@
             :items="processedItems"
             :editable="canUpdateRow"
             :deletable="canDeleteRow"
+            :busy="$isLoading('loading-single-row')"
             @edit="editRow"
             @delete="deleteRow"
             @changePage="updatePageInformation"
@@ -29,6 +30,8 @@
                 :errors="errors"
                 v-model="newRow"
                 :schema="schema"
+                :busy="$isLoading('add-new-row')"
+                busy-text="Adding Row"
                 @submit="processNewRow">
             </new-row-form>
         </p-modal>
@@ -39,6 +42,8 @@
                 v-model="newRow"
                 :errors="errors"
                 :schema="schema"
+                busy-text="Updating Row"
+                :busy="$isLoading('edit-row')"
                 @submit="processNewRow">
             </new-row-form>
         </p-modal>
@@ -105,7 +110,6 @@ export default {
 
     data() {
         return {
-            loading: false,
             totalCount: 1,
             page: 1,
             perPage: 5,
@@ -122,15 +126,13 @@ export default {
             this.perPage = pageData.size;
         },
         loadRows() {
-            this.loading = true;
-            this.$http.get('/activity-instance/' + this.activityInstanceId + '/row', {params: this.urlParams})
+            this.$http.get('/activity-instance/' + this.activityInstanceId + '/row', {params: this.urlParams, name: 'loading-single-row'})
                 .then(response => {
                     this.rows = response.data.data
                     this.page = response.data.current_page;
                     this.totalCount = response.data.total;
                 })
                 .catch(error => this.$notify.alert('Could not load the rows: ' + error.response.data.message))
-                .then(() => this.loading = false);
 
         },
         editRow(row) {
@@ -140,7 +142,7 @@ export default {
         deleteRow(row) {
             this.$ui.confirm.delete('Delete row?', 'Are you sure you want to delete this row?')
                 .then(() => {
-                    this.$http.delete('/row/' + row.row_id)
+                    this.$http.delete('/row/' + row.row_id, {name: 'delete-row-' + row.row_id})
                         .then(response => {
                             this.$notify.success('Row deleted');
                             this.loadRows();
@@ -161,14 +163,14 @@ export default {
             this.errors = {};
             this.$http.patch('/row/' + id, {
                 fields: row
-            })
+            }, {name: 'edit-row'})
                 .then(response => {
                     this.$notify.success('Row Updated');
                     this.rows.splice(
                         this.rows.indexOf(this.rows.find(item => item.id === id)),
                         1, response.data
                     );
-                    this.newRow = null;
+                    this.newRow = {};
                     this.$ui.modal.hide('edit-row');
                 })
                 .catch(error => {
@@ -186,12 +188,12 @@ export default {
             this.$http.post('/row', {
                 activity_instance_id: this.activityInstanceId,
                 fields: newRow
-            })
+            }, {name: 'add-new-row'})
                 .then(response => {
                     this.$notify.success('Row Added');
                     this.rows.unshift(response.data);
                     this.$ui.modal.hide('new-row');
-                    this.newRow = null;
+                    this.newRow = {};
                 })
                 .catch(error => {
                     if (error.response.status === 422) {
@@ -217,7 +219,7 @@ export default {
             return params;
         },
         searchLoading() {
-            return this.search !== '' && this.search !== null && this.loading === true;
+            return this.search !== '' && this.search !== null && this.$isLoading('loading-single-row');
         },
         fields() {
             return Object.keys(this.schema).filter(uuid => this.schema[uuid].visible)
@@ -235,7 +237,10 @@ export default {
         processedItems() {
             return this.rows.map(item => {
                 let definition = {
-                    row_id: item.id
+                    row_id: item.id,
+                    _table: {
+                        isDeleting: this.$isLoading('delete-row-' + item.id)
+                    }
                 };
                 item.cells.forEach(cell => {
                     definition[cell.column_id] = cell.value;

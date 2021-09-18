@@ -10,7 +10,7 @@
 
         </new-row-form-cell>
 
-        <p-button type="primary">Save</p-button>
+        <p-button type="primary" :busy="busy" :busy-text="busyText">Save</p-button>
     </form>
 </template>
 
@@ -34,6 +34,12 @@
                 default: function() {
                     return {};
                 }
+            },
+            busy: {
+                required: false, type: Boolean, default: false
+            },
+            busyText: {
+                required: false, type: String, default: 'Saving'
             }
         },
 

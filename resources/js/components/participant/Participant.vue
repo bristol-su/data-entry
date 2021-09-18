@@ -8,7 +8,7 @@
             </div>
             <div class="flex justify-end gap-2 self-end mb-2">
                 <span>Actions: </span>
-                <a :href="csvUrl" v-if="downloadCsv" class="text-primary hover:text-primary-dark" role="button">
+                <a :href="csvUrl" v-if="downloadCsv" class="text-primary hover:text-primary-dark">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                          content="Download CSV"
                          v-tippy="{ arrow: true, animation: 'fade', placement: 'top-start', arrow: true, interactive: true}"
@@ -17,7 +17,7 @@
                     </svg>
                     <span class="sr-only">Download CSV</span>
                 </a>
-                <a :href="templateUrl" v-if="useCsv" class="text-secondary hover:text-secondary-dark" role="button">
+                <a :href="templateUrl" v-if="useCsv" class="text-secondary hover:text-secondary-dark">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                          content="Download CSV Template"
                          v-tippy="{ arrow: true, animation: 'fade', placement: 'top-start', arrow: true, interactive: true}"
@@ -26,7 +26,7 @@
                     </svg>
                     <span class="sr-only">Download CSV Template</span>
                 </a>
-                <a href="#" @click="$ui.modal.show('upload-csv')" v-if="useCsv" class="text-info hover:text-info-dark" role="button">
+                <a href="#" @click="$ui.modal.show('upload-csv')" @keydown.space.prevent="$ui.modal.show('upload-csv')" @keydown.enter.prevent="$ui.modal.show('upload-csv')" v-if="useCsv" class="text-info hover:text-info-dark" role="button">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                          content="Upload CSV"
                          v-tippy="{ arrow: true, animation: 'fade', placement: 'top-start', arrow: true, interactive: true}"
@@ -43,6 +43,7 @@
                 :total-count="items.length"
                 :items="processedItems"
                 :editable="canUpdateRow"
+                :busy="$isLoading('load-rows')"
                 :deletable="canDeleteRow"
                 @edit="editRow"
                 @delete="deleteRow"
@@ -67,6 +68,8 @@
                 <new-row-form
                     :errors="errors"
                     v-model="newRow"
+                    :busy="$isLoading('add-new-row')"
+                    busy-text="Adding Row"
                     :schema="columnSchema"
                     @submit="processNewRow">
                 </new-row-form>
@@ -79,6 +82,8 @@
                     v-model="newRow"
                     :errors="errors"
                     :schema="columnSchema"
+                    busy-text="Updating Row"
+                    :busy="$isLoading('edit-row')"
                     @submit="processNewRow">
                 </new-row-form>
             </p-modal>
@@ -141,9 +146,8 @@ export default {
         return {
             items: [],
             page: 1,
-            perPage: 15,
+            perPage: 5,
             totalPages: 1,
-            loading: false,
             search: null,
             errors: {},
             newRow: {}
@@ -176,7 +180,7 @@ export default {
         deleteRow(row) {
             this.$ui.confirm.delete('Delete row?', 'Are you sure you want to delete this row?')
                 .then(() => {
-                    this.$http.delete('/row/' + row.row_id)
+                    this.$http.delete('/row/' + row.row_id, {name: 'delete-row-' + row.row_id})
                         .then(response => {
                             this.$notify.success('Row deleted');
                             this.loadItems();
@@ -185,17 +189,16 @@ export default {
                 });
         },
         loadItems() {
-            this.loading = true;
             this.$http.get('/row', {
-                params: this.urlParams
+                params: this.urlParams,
+                name: 'load-rows'
             })
                 .then(response => {
                     this.items = response.data.data
                     this.page = response.data.current_page;
                     this.totalPages = response.data.last_page;
                 })
-                .catch(error => this.$notify.alert('Could not load row data: ' + error.response.data.message))
-                .then(() => this.loading = false);
+                .catch(error => this.$notify.alert('Could not load row data: ' + error.response.data.message));
         },
         processNewRow() {
             if (this.newRow.hasOwnProperty('row_id')) {
@@ -210,7 +213,7 @@ export default {
             this.errors = {};
             this.$http.patch('/row/' + id, {
                 fields: row
-            })
+            }, {name: 'edit-row'})
                 .then(response => {
                     this.$notify.success('Row Updated');
                     this.items.splice(
@@ -218,6 +221,7 @@ export default {
                         1, response.data
                     );
                     this.$ui.modal.hide('edit-row');
+                    this.newRow = {};
                 })
                 .catch(error => {
                     if (error.response.status === 422) {
@@ -233,11 +237,12 @@ export default {
             this.errors = {};
             this.$http.post('/row', {
                 fields: newRow
-            })
+            }, {name: 'add-new-row'})
                 .then(response => {
                     this.$notify.success('Row Added');
                     this.items.unshift(response.data);
                     this.$ui.modal.hide('new-row');
+                    this.newRow = {};
                 })
                 .catch(error => {
                     if (error.response.status === 422) {
@@ -253,7 +258,7 @@ export default {
 
     computed: {
         searchLoading() {
-            return this.loading && this.search !== null && this.search !== ''
+            return this.$isLoading('load-rows') && this.search !== null && this.search !== ''
         },
         urlParams() {
             let params = {
@@ -287,7 +292,10 @@ export default {
         processedItems() {
             return this.items.map(item => {
                 let definition = {
-                    row_id: item.id
+                    row_id: item.id,
+                    _table: {
+                        isDeleting: this.$isLoading('delete-row-' + item.id)
+                    }
                 };
                 item.cells.forEach(cell => {
                     definition[cell.column_id] = cell.value;

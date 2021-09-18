@@ -1095,7 +1095,41 @@ var render = function() {
                           on: {
                             click: function($event) {
                               return _vm.$ui.modal.show("csv-download")
-                            }
+                            },
+                            keydown: [
+                              function($event) {
+                                if (
+                                  !$event.type.indexOf("key") &&
+                                  _vm._k(
+                                    $event.keyCode,
+                                    "enter",
+                                    13,
+                                    $event.key,
+                                    "Enter"
+                                  )
+                                ) {
+                                  return null
+                                }
+                                $event.preventDefault()
+                                return _vm.$ui.modal.show("csv-download")
+                              },
+                              function($event) {
+                                if (
+                                  !$event.type.indexOf("key") &&
+                                  _vm._k(
+                                    $event.keyCode,
+                                    "space",
+                                    32,
+                                    $event.key,
+                                    [" ", "Spacebar"]
+                                  )
+                                ) {
+                                  return null
+                                }
+                                $event.preventDefault()
+                                return _vm.$ui.modal.show("csv-download")
+                              }
+                            ]
                           }
                         },
                         [
@@ -1148,6 +1182,7 @@ var render = function() {
                 attrs: {
                   columns: _vm.allFields,
                   items: _vm.items,
+                  busy: _vm.$isLoading("loading-activity-instances"),
                   viewable: true
                 },
                 on: {
@@ -1197,28 +1232,75 @@ var render = function() {
             1
           ),
           _vm._v(" "),
-          _c(
-            "p-tab",
-            { attrs: { title: "Single" } },
-            [
-              _vm.participantRow
-                ? _c("participant-table-wrapper", {
-                    attrs: {
-                      "can-update-row": _vm.canUpdateRow,
-                      "can-store-row": _vm.canStoreRow,
-                      "can-delete-row": _vm.canDeleteRow,
-                      "activity-instance-id": _vm.participantRow.id,
-                      schema: _vm.columnSchema
-                    }
-                  })
-                : _c("span", [
-                    _vm._v(
-                      "\n                Please select which submission to view from the 'All' tab.\n            "
-                    )
-                  ])
-            ],
-            1
-          )
+          _c("p-tab", { attrs: { title: "Single" } }, [
+            _vm.participantRow
+              ? _c(
+                  "div",
+                  [
+                    _c(
+                      "h3",
+                      { staticClass: "text-lg font-semibold text-center pb-4" },
+                      [
+                        _vm.participantRow.resource_type === "user"
+                          ? _c("span", [
+                              _vm._v(
+                                _vm._s(
+                                  _vm.participantRow.participant.data
+                                    .preferred_name
+                                )
+                              )
+                            ])
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.participantRow.resource_type === "group"
+                          ? _c("span", [
+                              _vm._v(
+                                _vm._s(_vm.participantRow.participant.data.name)
+                              )
+                            ])
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.participantRow.resource_type === "role"
+                          ? _c("span", [
+                              _vm._v(
+                                _vm._s(
+                                  _vm.participantRow.participant.data.role_name
+                                ) +
+                                  " (" +
+                                  _vm._s(
+                                    _vm.participantRow.participant.data.position
+                                      .name
+                                  ) +
+                                  " of " +
+                                  _vm._s(
+                                    _vm.participantRow.participant.data.group
+                                      .name
+                                  ) +
+                                  ")"
+                              )
+                            ])
+                          : _vm._e()
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c("participant-table-wrapper", {
+                      attrs: {
+                        "can-update-row": _vm.canUpdateRow,
+                        "can-store-row": _vm.canStoreRow,
+                        "can-delete-row": _vm.canDeleteRow,
+                        "activity-instance-id": _vm.participantRow.id,
+                        schema: _vm.columnSchema
+                      }
+                    })
+                  ],
+                  1
+                )
+              : _c("span", [
+                  _vm._v(
+                    "\n                Please select which submission to view from the 'All' tab.\n            "
+                  )
+                ])
+          ])
         ],
         1
       ),
@@ -1256,38 +1338,10 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "form",
-    {
-      on: {
-        submit: function($event) {
-          $event.stopPropagation()
-          $event.preventDefault()
-          return _vm.handleSubmit.apply(null, arguments)
-        }
-      }
-    },
-    [
-      _c("p-select", {
-        attrs: {
-          id: "csv-data-set",
-          label: "What data set would you like to download?",
-          "select-options": _vm.options,
-          required: true
-        },
-        model: {
-          value: _vm.download,
-          callback: function($$v) {
-            _vm.download = $$v
-          },
-          expression: "download"
-        }
-      }),
-      _vm._v(" "),
-      _c("p-button", { attrs: { variant: "primary" } }, [_vm._v("Download")])
-    ],
-    1
-  )
+  return _c("p-api-form", {
+    attrs: { schema: _vm.form, "button-text": "Download" },
+    on: { submit: _vm.handleSubmit }
+  })
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -1321,7 +1375,8 @@ var render = function() {
           "total-count": _vm.totalCount,
           items: _vm.processedItems,
           editable: _vm.canUpdateRow,
-          deletable: _vm.canDeleteRow
+          deletable: _vm.canDeleteRow,
+          busy: _vm.$isLoading("loading-single-row")
         },
         on: {
           edit: _vm.editRow,
@@ -1375,7 +1430,12 @@ var render = function() {
         { attrs: { id: "new-row", title: "Add a new row" } },
         [
           _c("new-row-form", {
-            attrs: { errors: _vm.errors, schema: _vm.schema },
+            attrs: {
+              errors: _vm.errors,
+              schema: _vm.schema,
+              busy: _vm.$isLoading("add-new-row"),
+              "busy-text": "Adding Row"
+            },
             on: { submit: _vm.processNewRow },
             model: {
               value: _vm.newRow,
@@ -1395,7 +1455,12 @@ var render = function() {
         [
           _vm.newRow
             ? _c("new-row-form", {
-                attrs: { errors: _vm.errors, schema: _vm.schema },
+                attrs: {
+                  errors: _vm.errors,
+                  schema: _vm.schema,
+                  "busy-text": "Updating Row",
+                  busy: _vm.$isLoading("edit-row")
+                },
                 on: { submit: _vm.processNewRow },
                 model: {
                   value: _vm.newRow,
@@ -1440,7 +1505,11 @@ var render = function() {
     "div",
     [
       _c("p-api-form", {
-        attrs: { schema: _vm.form, busy: _vm.isLoading },
+        attrs: {
+          schema: _vm.form,
+          busy: _vm.$isLoading("upload-csv"),
+          "busy-text": "Importing Template"
+        },
         on: { submit: _vm.handleSubmit }
       })
     ],
@@ -1502,7 +1571,13 @@ var render = function() {
         })
       }),
       _vm._v(" "),
-      _c("p-button", { attrs: { type: "primary" } }, [_vm._v("Save")])
+      _c(
+        "p-button",
+        {
+          attrs: { type: "primary", busy: _vm.busy, "busy-text": _vm.busyText }
+        },
+        [_vm._v("Save")]
+      )
     ],
     2
   )
@@ -1609,7 +1684,7 @@ var render = function() {
               "a",
               {
                 staticClass: "text-primary hover:text-primary-dark",
-                attrs: { href: _vm.csvUrl, role: "button" }
+                attrs: { href: _vm.csvUrl }
               },
               [
                 _c(
@@ -1662,7 +1737,7 @@ var render = function() {
               "a",
               {
                 staticClass: "text-secondary hover:text-secondary-dark",
-                attrs: { href: _vm.templateUrl, role: "button" }
+                attrs: { href: _vm.templateUrl }
               },
               [
                 _c(
@@ -1721,7 +1796,32 @@ var render = function() {
                 on: {
                   click: function($event) {
                     return _vm.$ui.modal.show("upload-csv")
-                  }
+                  },
+                  keydown: [
+                    function($event) {
+                      if (
+                        !$event.type.indexOf("key") &&
+                        _vm._k($event.keyCode, "space", 32, $event.key, [
+                          " ",
+                          "Spacebar"
+                        ])
+                      ) {
+                        return null
+                      }
+                      $event.preventDefault()
+                      return _vm.$ui.modal.show("upload-csv")
+                    },
+                    function($event) {
+                      if (
+                        !$event.type.indexOf("key") &&
+                        _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                      ) {
+                        return null
+                      }
+                      $event.preventDefault()
+                      return _vm.$ui.modal.show("upload-csv")
+                    }
+                  ]
                 }
               },
               [
@@ -1781,6 +1881,7 @@ var render = function() {
             "total-count": _vm.items.length,
             items: _vm.processedItems,
             editable: _vm.canUpdateRow,
+            busy: _vm.$isLoading("load-rows"),
             deletable: _vm.canDeleteRow
           },
           on: {
@@ -1841,7 +1942,12 @@ var render = function() {
           { attrs: { id: "new-row", title: "Add a new row" } },
           [
             _c("new-row-form", {
-              attrs: { errors: _vm.errors, schema: _vm.columnSchema },
+              attrs: {
+                errors: _vm.errors,
+                busy: _vm.$isLoading("add-new-row"),
+                "busy-text": "Adding Row",
+                schema: _vm.columnSchema
+              },
               on: { submit: _vm.processNewRow },
               model: {
                 value: _vm.newRow,
@@ -1867,7 +1973,12 @@ var render = function() {
           [
             _vm.newRow
               ? _c("new-row-form", {
-                  attrs: { errors: _vm.errors, schema: _vm.columnSchema },
+                  attrs: {
+                    errors: _vm.errors,
+                    schema: _vm.columnSchema,
+                    "busy-text": "Updating Row",
+                    busy: _vm.$isLoading("edit-row")
+                  },
                   on: { submit: _vm.processNewRow },
                   model: {
                     value: _vm.newRow,
@@ -2356,6 +2467,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2398,7 +2517,6 @@ __webpack_require__.r(__webpack_exports__);
       totalPages: 1,
       sortBy: null,
       sortDesc: false,
-      loading: false,
       search: null,
       errors: {},
       allFields: [{
@@ -2442,23 +2560,21 @@ __webpack_require__.r(__webpack_exports__);
     loadItems: function loadItems() {
       var _this = this;
 
-      this.loading = true;
       this.$http.get('/activity-instance', {
-        params: this.urlParams
+        params: this.urlParams,
+        name: 'loading-activity-instances'
       }).then(function (response) {
         _this.items = response.data.data;
         _this.page = response.data.current_page;
         _this.totalPages = response.data.last_page;
       })["catch"](function (error) {
         return _this.$notify.alert('Could not load row data: ' + error.response.data.message);
-      }).then(function () {
-        return _this.loading = false;
       });
     }
   },
   computed: {
     searchLoading: function searchLoading() {
-      return this.loading && this.search !== null && this.search !== '';
+      return this.isLoading('loading-activity-instances') && this.search !== null && this.search !== '';
     },
     urlParams: function urlParams() {
       var params = {
@@ -2513,9 +2629,6 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
-//
-//
-//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "CsvDownload",
@@ -2531,30 +2644,25 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       }
     }
   },
-  data: function data() {
-    return {
-      download: null
-    };
-  },
   methods: {
-    handleSubmit: function handleSubmit() {
-      window.location.href = this.downloadUrl;
+    handleSubmit: function handleSubmit(data) {
+      window.location.href = this.$tools.routes.query.addQueryStringToWebUrl(this.$tools.routes.module.moduleUrl() + '/csv' + (data.dataset !== 'all-data' ? '/activity-instance/' + data.dataset : ''));
     }
   },
   computed: {
-    downloadUrl: function downloadUrl() {
-      return this.$tools.routes.query.addQueryStringToWebUrl(this.$tools.routes.module.moduleUrl() + '/csv' + (this.download !== null ? '/activity-instance/' + this.download : ''));
-    },
     options: function options() {
       return [{
         value: 'All Data',
-        id: null
+        id: 'all-data'
       }].concat(_toConsumableArray(this.activityInstances.map(function (actInst) {
         return {
           id: actInst.id,
           value: actInst.resource_type === 'user' ? actInst.participant.data.first_name + ' ' + actInst.participant.data.last_name : actInst.resource_type === 'group' ? actInst.participant.data.name : actInst.participant.data.role_name
         };
       })));
+    },
+    form: function form() {
+      return this.$tools.generator.form.newForm().withGroup(this.$tools.generator.group.newGroup().withField(this.$tools.generator.field.select('dataset').label('What data set would you like to download?').setOptions(this.options).required(false)));
     }
   }
 });
@@ -2576,6 +2684,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _participant_ParticipantTableCell__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../participant/ParticipantTableCell */ "./resources/js/components/participant/ParticipantTableCell.vue");
 /* harmony import */ var _participant_NewRowForm__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../participant/NewRowForm */ "./resources/js/components/participant/NewRowForm.vue");
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2681,7 +2794,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      loading: false,
       totalCount: 1,
       page: 1,
       perPage: 5,
@@ -2699,17 +2811,15 @@ __webpack_require__.r(__webpack_exports__);
     loadRows: function loadRows() {
       var _this = this;
 
-      this.loading = true;
       this.$http.get('/activity-instance/' + this.activityInstanceId + '/row', {
-        params: this.urlParams
+        params: this.urlParams,
+        name: 'loading-single-row'
       }).then(function (response) {
         _this.rows = response.data.data;
         _this.page = response.data.current_page;
         _this.totalCount = response.data.total;
       })["catch"](function (error) {
         return _this.$notify.alert('Could not load the rows: ' + error.response.data.message);
-      }).then(function () {
-        return _this.loading = false;
       });
     },
     editRow: function editRow(row) {
@@ -2720,7 +2830,9 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       this.$ui.confirm["delete"]('Delete row?', 'Are you sure you want to delete this row?').then(function () {
-        _this2.$http["delete"]('/row/' + row.row_id).then(function (response) {
+        _this2.$http["delete"]('/row/' + row.row_id, {
+          name: 'delete-row-' + row.row_id
+        }).then(function (response) {
           _this2.$notify.success('Row deleted');
 
           _this2.loadRows();
@@ -2744,6 +2856,8 @@ __webpack_require__.r(__webpack_exports__);
       this.errors = {};
       this.$http.patch('/row/' + id, {
         fields: row
+      }, {
+        name: 'edit-row'
       }).then(function (response) {
         _this3.$notify.success('Row Updated');
 
@@ -2751,7 +2865,7 @@ __webpack_require__.r(__webpack_exports__);
           return item.id === id;
         })), 1, response.data);
 
-        _this3.newRow = null;
+        _this3.newRow = {};
 
         _this3.$ui.modal.hide('edit-row');
       })["catch"](function (error) {
@@ -2769,6 +2883,8 @@ __webpack_require__.r(__webpack_exports__);
       this.$http.post('/row', {
         activity_instance_id: this.activityInstanceId,
         fields: newRow
+      }, {
+        name: 'add-new-row'
       }).then(function (response) {
         _this4.$notify.success('Row Added');
 
@@ -2776,7 +2892,7 @@ __webpack_require__.r(__webpack_exports__);
 
         _this4.$ui.modal.hide('new-row');
 
-        _this4.newRow = null;
+        _this4.newRow = {};
       })["catch"](function (error) {
         if (error.response.status === 422) {
           _this4.errors = error.response.data.errors;
@@ -2800,7 +2916,7 @@ __webpack_require__.r(__webpack_exports__);
       return params;
     },
     searchLoading: function searchLoading() {
-      return this.search !== '' && this.search !== null && this.loading === true;
+      return this.search !== '' && this.search !== null && this.$isLoading('loading-single-row');
     },
     fields: function fields() {
       var _this5 = this;
@@ -2820,9 +2936,14 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     processedItems: function processedItems() {
+      var _this6 = this;
+
       return this.rows.map(function (item) {
         var definition = {
-          row_id: item.id
+          row_id: item.id,
+          _table: {
+            isDeleting: _this6.$isLoading('delete-row-' + item.id)
+          }
         };
         item.cells.forEach(function (cell) {
           definition[cell.column_id] = cell.value;
@@ -2885,9 +3006,6 @@ __webpack_require__.r(__webpack_exports__);
   computed: {
     form: function form() {
       return this.$tools.generator.form.newForm().withGroup(this.$tools.generator.group.newGroup().withField(this.$tools.generator.field.file('file').label('Completed Template').hint('Upload the completed template. The template can be downloaded from the previous screen.')));
-    },
-    isLoading: function isLoading() {
-      return this.$isLoading('upload-csv');
     }
   }
 });
@@ -2943,6 +3061,16 @@ __webpack_require__.r(__webpack_exports__);
       "default": function _default() {
         return {};
       }
+    },
+    busy: {
+      required: false,
+      type: Boolean,
+      "default": false
+    },
+    busyText: {
+      required: false,
+      type: String,
+      "default": 'Saving'
     }
   },
   data: function data() {
@@ -3265,6 +3393,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 
 
 
@@ -3309,9 +3442,8 @@ __webpack_require__.r(__webpack_exports__);
     return {
       items: [],
       page: 1,
-      perPage: 15,
+      perPage: 5,
       totalPages: 1,
-      loading: false,
       search: null,
       errors: {},
       newRow: {}
@@ -3343,7 +3475,9 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       this.$ui.confirm["delete"]('Delete row?', 'Are you sure you want to delete this row?').then(function () {
-        _this.$http["delete"]('/row/' + row.row_id).then(function (response) {
+        _this.$http["delete"]('/row/' + row.row_id, {
+          name: 'delete-row-' + row.row_id
+        }).then(function (response) {
           _this.$notify.success('Row deleted');
 
           _this.loadItems();
@@ -3355,17 +3489,15 @@ __webpack_require__.r(__webpack_exports__);
     loadItems: function loadItems() {
       var _this2 = this;
 
-      this.loading = true;
       this.$http.get('/row', {
-        params: this.urlParams
+        params: this.urlParams,
+        name: 'load-rows'
       }).then(function (response) {
         _this2.items = response.data.data;
         _this2.page = response.data.current_page;
         _this2.totalPages = response.data.last_page;
       })["catch"](function (error) {
         return _this2.$notify.alert('Could not load row data: ' + error.response.data.message);
-      }).then(function () {
-        return _this2.loading = false;
       });
     },
     processNewRow: function processNewRow() {
@@ -3383,6 +3515,8 @@ __webpack_require__.r(__webpack_exports__);
       this.errors = {};
       this.$http.patch('/row/' + id, {
         fields: row
+      }, {
+        name: 'edit-row'
       }).then(function (response) {
         _this3.$notify.success('Row Updated');
 
@@ -3391,6 +3525,8 @@ __webpack_require__.r(__webpack_exports__);
         })), 1, response.data);
 
         _this3.$ui.modal.hide('edit-row');
+
+        _this3.newRow = {};
       })["catch"](function (error) {
         if (error.response.status === 422) {
           _this3.csvErrors = error.response.data.errors;
@@ -3405,12 +3541,16 @@ __webpack_require__.r(__webpack_exports__);
       this.errors = {};
       this.$http.post('/row', {
         fields: newRow
+      }, {
+        name: 'add-new-row'
       }).then(function (response) {
         _this4.$notify.success('Row Added');
 
         _this4.items.unshift(response.data);
 
         _this4.$ui.modal.hide('new-row');
+
+        _this4.newRow = {};
       })["catch"](function (error) {
         if (error.response.status === 422) {
           _this4.errors = error.response.data.errors;
@@ -3422,7 +3562,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   computed: {
     searchLoading: function searchLoading() {
-      return this.loading && this.search !== null && this.search !== '';
+      return this.$isLoading('load-rows') && this.search !== null && this.search !== '';
     },
     urlParams: function urlParams() {
       var params = {
@@ -3460,9 +3600,14 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     processedItems: function processedItems() {
+      var _this6 = this;
+
       return this.items.map(function (item) {
         var definition = {
-          row_id: item.id
+          row_id: item.id,
+          _table: {
+            isDeleting: _this6.$isLoading('delete-row-' + item.id)
+          }
         };
         item.cells.forEach(function (cell) {
           definition[cell.column_id] = cell.value;

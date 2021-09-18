@@ -1,10 +1,7 @@
 <template>
+    <p-api-form :schema="form" @submit="handleSubmit" button-text="Download">
 
-    <form @submit.stop.prevent="handleSubmit">
-        <p-select id="csv-data-set" label="What data set would you like to download?" :select-options="options" v-model="download" :required="true"></p-select>
-
-        <p-button variant="primary">Download</p-button>
-    </form>
+    </p-api-form>
 </template>
 
 <script>
@@ -25,29 +22,20 @@
             }
         },
 
-        data() {
-            return {
-                download: null
-            }
-        },
-
         methods: {
-            handleSubmit() {
-                window.location.href = this.downloadUrl
+            handleSubmit(data) {
+                window.location.href = this.$tools.routes.query.addQueryStringToWebUrl(
+                    this.$tools.routes.module.moduleUrl()
+                    + '/csv'
+                    + (data.dataset !== 'all-data' ? '/activity-instance/' + data.dataset : '')
+                );
             }
         },
 
         computed: {
-            downloadUrl() {
-                return this.$tools.routes.query.addQueryStringToWebUrl(
-                    this.$tools.routes.module.moduleUrl()
-                        + '/csv'
-                        + (this.download !== null ? '/activity-instance/' + this.download : '')
-                    );
-            },
             options() {
                 return [
-                    {value: 'All Data', id: null},
+                    {value: 'All Data', id: 'all-data'},
                     ...this.activityInstances.map(actInst => {
                         return {
                             id: actInst.id, value:
@@ -57,6 +45,18 @@
                         }
                     })
                 ];
+            },
+            form() {
+                return this.$tools.generator.form.newForm()
+                    .withGroup(
+                        this.$tools.generator.group.newGroup()
+                            .withField(
+                                this.$tools.generator.field.select('dataset')
+                                    .label('What data set would you like to download?')
+                                    .setOptions(this.options)
+                                    .required(false)
+                            )
+                    )
             }
         }
     }

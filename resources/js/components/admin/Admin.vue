@@ -4,7 +4,7 @@
             <p-tab title="All">
                 <div class="flex justify-end gap-2 self-end mb-2 mt-5">
                     <span>Actions: </span>
-                    <a @click="$ui.modal.show('csv-download')" v-if="canDownloadCsv" class="text-primary hover:text-primary-dark">
+                    <a @click="$ui.modal.show('csv-download')" @keydown.enter.prevent="$ui.modal.show('csv-download')" @keydown.space.prevent="$ui.modal.show('csv-download')" v-if="canDownloadCsv" class="text-primary hover:text-primary-dark">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                              content="Download CSV"
                              v-tippy="{ arrow: true, animation: 'fade', placement: 'top-start', arrow: true, interactive: true}"
@@ -16,6 +16,7 @@
                 <p-table
                     :columns="allFields"
                     :items="items"
+                    :busy="$isLoading('loading-activity-instances')"
                     :viewable="true"
                     @changePage="updatePageInformation"
                     @view="loadDetails"
@@ -28,14 +29,21 @@
                 </p-table>
             </p-tab>
             <p-tab title="Single">
-                <participant-table-wrapper
-                    v-if="participantRow"
-                    :can-update-row="canUpdateRow"
-                    :can-store-row="canStoreRow"
-                    :can-delete-row="canDeleteRow"
-                    :activity-instance-id="participantRow.id"
-                    :schema="columnSchema">
-                </participant-table-wrapper>
+                <div v-if="participantRow">
+                    <h3 class="text-lg font-semibold text-center pb-4">
+                        <span v-if="participantRow.resource_type === 'user'">{{participantRow.participant.data.preferred_name}}</span>
+                        <span v-if="participantRow.resource_type === 'group'">{{participantRow.participant.data.name}}</span>
+                        <span v-if="participantRow.resource_type === 'role'">{{participantRow.participant.data.role_name}} ({{participantRow.participant.data.position.name}} of {{participantRow.participant.data.group.name}})</span>
+                    </h3>
+
+                    <participant-table-wrapper
+                        :can-update-row="canUpdateRow"
+                        :can-store-row="canStoreRow"
+                        :can-delete-row="canDeleteRow"
+                        :activity-instance-id="participantRow.id"
+                        :schema="columnSchema">
+                    </participant-table-wrapper>
+                </div>
                 <span v-else>
                     Please select which submission to view from the 'All' tab.
                 </span>
@@ -94,7 +102,6 @@
                 totalPages: 1,
                 sortBy: null,
                 sortDesc: false,
-                loading: false,
                 search: null,
                 errors: {},
                 allFields: [
@@ -135,9 +142,9 @@
                 this.perPage = pageData.size;
             },
             loadItems() {
-                this.loading = true;
                 this.$http.get('/activity-instance', {
-                    params: this.urlParams
+                    params: this.urlParams,
+                    name: 'loading-activity-instances'
                 })
                     .then(response => {
                         this.items = response.data.data
@@ -145,13 +152,12 @@
                         this.totalPages = response.data.last_page;
                     })
                     .catch(error => this.$notify.alert('Could not load row data: ' + error.response.data.message))
-                    .then(() => this.loading = false);
             },
         },
 
         computed: {
             searchLoading() {
-                return this.loading && this.search !== null && this.search !== ''
+                return this.isLoading('loading-activity-instances') && this.search !== null && this.search !== ''
             },
             urlParams() {
                 let params = {

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <p-api-form :schema="form" @submit="handleSubmit" :busy="isLoading">
+        <p-api-form :schema="form" @submit="handleSubmit" :busy="$isLoading('upload-csv')" busy-text="Importing Template">
 
         </p-api-form>
     </div>
@@ -43,9 +43,6 @@ export default {
                                 .hint('Upload the completed template. The template can be downloaded from the previous screen.')
                         )
                 )
-        },
-        isLoading() {
-            return this.$isLoading('upload-csv')
         }
     }
 }
