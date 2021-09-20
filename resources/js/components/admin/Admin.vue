@@ -41,7 +41,8 @@
                         :can-store-row="canStoreRow"
                         :can-delete-row="canDeleteRow"
                         :activity-instance-id="participantRow.id"
-                        :schema="columnSchema">
+                        :schema="columnSchema"
+                        @delete="deleteItem">
                     </participant-table-wrapper>
                 </div>
                 <span v-else>
@@ -153,6 +154,17 @@
                     })
                     .catch(error => this.$notify.alert('Could not load row data: ' + error.response.data.message))
             },
+            deleteItem() {
+                if(this.participantRow) {
+                    let participantRow = _.cloneDeep(this.participantRow);
+                    participantRow.rows_count = (participantRow.rows_count === 0 ? 0 : participantRow.rows_count - 1);
+                    this.items.splice(
+                        this.items.indexOf(this.participantRow),
+                        1,
+                        participantRow
+                    );
+                }
+            }
         },
 
         computed: {

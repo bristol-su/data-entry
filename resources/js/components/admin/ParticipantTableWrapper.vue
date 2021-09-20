@@ -146,6 +146,7 @@ export default {
                         .then(response => {
                             this.$notify.success('Row deleted');
                             this.loadRows();
+                            this.$emit('delete');
                         })
                         .catch(error => this.$notify.alert('Could not delete row: ' + error.response.data.message));
                 });

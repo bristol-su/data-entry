@@ -1571,20 +1571,23 @@ __webpack_require__.r(__webpack_exports__);
         hint: {validator: (val) => val === null || typeof val === 'string', required: false},
         tooltip: {validator: (val) => val === null || typeof val === 'string', required: false},
         value: {required: false, default: null},
-        errors: {required: false, type: Array}
+        errors: {required: false, type: Array, default: () => []}
     },
     components: {
         VFormLabel: _VFormLabel__WEBPACK_IMPORTED_MODULE_0__["default"]
+    },
+    watch: {
+        errors(errors) {
+            this.recheckErrors();
+        }
     },
     methods: {
         setValue(value) {
             this.$emit('input', value);
         },
         recheckErrors() {
-            this.formErrors = this.$ui.errors.has(this.errorKeyValue) ? this.$ui.errors.get(this.errorKeyValue) : [];
-            if(this.errors) {
-                this.formErrors = this.formErrors.concat(this.errors);
-            }
+            this.formErrors = (this.$ui.errors.has(this.errorKeyValue) ? this.$ui.errors.get(this.errorKeyValue) : [])
+                .concat(this.errors);
         },
     },
     created() {
@@ -1602,7 +1605,7 @@ __webpack_require__.r(__webpack_exports__);
             if(this.hasHelp) {
                 describedBy.push(this.id + '-help-text')
             }
-            if(this.errors && this.errors.length > 0) {
+            if(this.formErrors.length > 0) {
                 describedBy.push(this.id + '-errors')
             }
             if(describedBy.length === 0) {

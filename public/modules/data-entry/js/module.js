@@ -1290,7 +1290,8 @@ var render = function() {
                         "can-delete-row": _vm.canDeleteRow,
                         "activity-instance-id": _vm.participantRow.id,
                         schema: _vm.columnSchema
-                      }
+                      },
+                      on: { delete: _vm.deleteItem }
                     })
                   ],
                   1
@@ -2475,6 +2476,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 
 
@@ -2570,6 +2572,14 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (error) {
         return _this.$notify.alert('Could not load row data: ' + error.response.data.message);
       });
+    },
+    deleteItem: function deleteItem() {
+      if (this.participantRow) {
+        var participantRow = _.cloneDeep(this.participantRow);
+
+        participantRow.rows_count = participantRow.rows_count === 0 ? 0 : participantRow.rows_count - 1;
+        this.items.splice(this.items.indexOf(this.participantRow), 1, participantRow);
+      }
     }
   },
   computed: {
@@ -2836,6 +2846,8 @@ __webpack_require__.r(__webpack_exports__);
           _this2.$notify.success('Row deleted');
 
           _this2.loadRows();
+
+          _this2.$emit('delete');
         })["catch"](function (error) {
           return _this2.$notify.alert('Could not delete row: ' + error.response.data.message);
         });
