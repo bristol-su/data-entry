@@ -1,9 +1,11 @@
 <template>
-    <b-form-input
+    <p-text-input
         v-model="contents"
-        type="text"
-        :state="isValid"
-    ></b-form-input>
+        :id="id"
+        :hint="hint"
+        :label="label"
+        :errors="errors"
+    ></p-text-input>
 </template>
 
 <script>

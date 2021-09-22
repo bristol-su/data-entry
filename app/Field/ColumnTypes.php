@@ -4,13 +4,11 @@ namespace BristolSU\Module\DataEntry\Field;
 
 use BristolSU\Module\DataEntry\ColumnTypes\ColumnTypeStore;
 use FormSchema\Schema\Field;
-use FormSchema\Transformers\VFGTransformer;
+use FormSchema\Transformers\Transformer;
 
 class ColumnTypes extends Field
 {
 
-    protected $type = 'dataEntryColumnTypes';
-    
     protected $globalValidation = [
         ['text' => 'Required', 'value' => 'required'],
         ['text' => 'Optional', 'value' => 'nullable'],
@@ -18,7 +16,7 @@ class ColumnTypes extends Field
         ['text' => 'Maximum Value', 'value' => 'max:100'],
         ['text' => 'Size is Between', 'value' => 'between:0,100']
     ];
-    
+
     public function getAppendedAttributes(): array
     {
         [$fieldTypes, $fieldValidation, $fieldConfiguration] = static::getFieldInformation();
@@ -42,11 +40,16 @@ class ColumnTypes extends Field
             $fieldValidation[$alias] = $field::validation();
             $config = $field::configuration();
             if($config) {
-                $fieldConfiguration[$alias] = (new VFGTransformer())->transformToArray($config);
+                $fieldConfiguration[$alias] = app(Transformer::class)->transformToArray($config);
             } else {
                 $fieldConfiguration[$alias] = null;
             }
         }
         return [$fieldTypes, $fieldValidation, $fieldConfiguration];
+    }
+
+    public function getType(): string
+    {
+        return 'p-data-entry-column-types';
     }
 }

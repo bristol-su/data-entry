@@ -1,12 +1,12 @@
 <template>
-    <b-list-group-item
+    <a
             href="#"
             :active="isActive"
             active-class="btn btn-info"
             @click="$emit('click', uuid)"
     >
         <i class="fa fa-bars"/> {{header}} <i class="fa fa-chevron-right fa-pull-right"/>
-    </b-list-group-item>
+    </a>
 </template>
 
 <script>

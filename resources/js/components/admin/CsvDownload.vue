@@ -1,36 +1,7 @@
 <template>
-    <b-modal
-            @hidden="resetForm"
-            @ok="handleOk"
-            id="new-row"
-            scrollable
-            size="xl"
-            title="Add Row"
-            v-model="shouldShowModal">
-        <div style="padding-bottom: 30%">
-            <b-row>
-                <b-col>
-                    <h3>Choose which data set to download</h3>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
+    <p-api-form :schema="form" @submit="handleSubmit" button-text="Download">
 
-                    <b-form @submit.stop.prevent="handleSubmit">
-                        <v-select :reduce="option => option.value" :options="options" v-model="download"></v-select>
-                    </b-form>
-                    <template v-slot:modal-cancel>
-                        <span>Cancel</span>
-                    </template>
-                    <template v-slot:modal-ok>
-                        <span>Save</span>
-                    </template>
-                </b-col>
-            </b-row>
-        </div>
-
-    </b-modal>
-
+    </p-api-form>
 </template>
 
 <script>
@@ -42,14 +13,6 @@
         components: {VSelect},
 
         props: {
-            show: {
-                required: true,
-                type: Boolean
-            },
-            queryString: {
-                required: true,
-                type: String
-            },
             activityInstances: {
                 required: false,
                 type: Array,
@@ -59,55 +22,41 @@
             }
         },
 
-        data() {
-            return {
-                download: null
-            }
-        },
-
         methods: {
-            handleOk(bvModalEvt) {
-                bvModalEvt.preventDefault()
-                this.handleSubmit()
-            },
-            handleSubmit() {
-                this.loading = true;
-                // Validate
-                window.location.href = this.downloadUrl
-            },
-            resetForm() {
-                this.newRow = {};
+            handleSubmit(data) {
+                window.location.href = this.$tools.routes.query.addQueryStringToWebUrl(
+                    this.$tools.routes.module.moduleUrl()
+                    + '/csv'
+                    + (data.dataset !== 'all-data' ? '/activity-instance/' + data.dataset : '')
+                );
             }
         },
 
         computed: {
-            shouldShowModal: {
-                get() {
-                    return this.show;
-                },
-                set(show) {
-                    this.$emit('update:show', show);
-                }
-            },
-            downloadUrl() {
-                return this.$url
-                    + '/csv'
-                    + (this.download !== null ? '/activity-instance/' + this.download : '')
-                    + '?'
-                    + this.queryString;
-            },
             options() {
                 return [
-                    {label: 'All Data', value: null},
+                    {value: 'All Data', id: 'all-data'},
                     ...this.activityInstances.map(actInst => {
                         return {
-                            value: actInst.id, label:
+                            id: actInst.id, value:
                                 (actInst.resource_type === 'user' ? actInst.participant.data.first_name + ' ' + actInst.participant.data.last_name :
                                         (actInst.resource_type === 'group' ? actInst.participant.data.name : actInst.participant.data.role_name)
                                 )
                         }
                     })
                 ];
+            },
+            form() {
+                return this.$tools.generator.form.newForm()
+                    .withGroup(
+                        this.$tools.generator.group.newGroup()
+                            .withField(
+                                this.$tools.generator.field.select('dataset')
+                                    .label('What data set would you like to download?')
+                                    .setOptions(this.options)
+                                    .required(false)
+                            )
+                    )
             }
         }
     }

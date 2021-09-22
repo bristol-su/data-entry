@@ -1,77 +1,77 @@
 <template>
     <div>
-        <b-row>
-            <b-col>
-                <b-button variant="outline-secondary" @click="showCsvDownload = true" v-if="canDownloadCsv">Download CSV</b-button>
-            </b-col>
-            <b-col>
-                <b-input-group>
-                    <template v-slot:prepend>
-                        <b-input-group-text>
-                            <i class="fa fa-search" />
-                        </b-input-group-text>
+        <p-tabs ref="tabs">
+            <p-tab title="All">
+                <div class="flex justify-end gap-2 self-end mb-2 mt-5">
+                    <span>Actions: </span>
+                    <a @click="$ui.modal.show('csv-download')" @keydown.enter.prevent="$ui.modal.show('csv-download')" @keydown.space.prevent="$ui.modal.show('csv-download')" v-if="canDownloadCsv" class="text-primary hover:text-primary-dark">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                             content="Download CSV"
+                             v-tippy="{ arrow: true, animation: 'fade', placement: 'top-start', arrow: true, interactive: true}"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                    </a>
+                </div>
+                <p-table
+                    :columns="allFields"
+                    :items="items"
+                    :busy="$isLoading('loading-activity-instances')"
+                    :viewable="true"
+                    @changePage="updatePageInformation"
+                    @view="loadDetails"
+                >
+                    <template v-slot:cell(name)="{row}">
+                        <span v-if="row.resource_type === 'user'">{{row.participant.data.first_name}} {{row.participant.data.last_name}}</span>
+                        <span v-if="row.resource_type === 'group'">{{row.participant.data.name}}</span>
+                        <span v-if="row.resource_type === 'role'">{{row.participant.data.role_name}} ({{row.participant.data.position.name}} of {{row.participant.data.group.name}})</span>
                     </template>
-                    <b-form-input v-model="search" type="search" placeholder="Type to Search" :class="{'right-borderless': searchLoading}">
+                </p-table>
+            </p-tab>
+            <p-tab title="Single">
+                <div v-if="participantRow">
+                    <h3 class="text-lg font-semibold text-center pb-4">
+                        <span v-if="participantRow.resource_type === 'user'">{{participantRow.participant.data.preferred_name}}</span>
+                        <span v-if="participantRow.resource_type === 'group'">{{participantRow.participant.data.name}}</span>
+                        <span v-if="participantRow.resource_type === 'role'">{{participantRow.participant.data.role_name}} ({{participantRow.participant.data.position.name}} of {{participantRow.participant.data.group.name}})</span>
+                    </h3>
 
-                    </b-form-input>
-                    <template v-slot:append>
-                        <b-input-group-text 
-                                style="border-left: 0; background-color: #ffffff" 
-                                v-if="searchLoading" 
-                                label="Loading">
-                            <b-spinner small></b-spinner>
-                        </b-input-group-text>
-                    </template>
-                </b-input-group>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <admin-table
+                    <participant-table-wrapper
                         :can-update-row="canUpdateRow"
                         :can-store-row="canStoreRow"
                         :can-delete-row="canDeleteRow"
+                        :activity-instance-id="participantRow.id"
                         :schema="columnSchema"
-                        :items="items"
-                        :page.sync="page"
-                        :per-page.sync="perPage"
-                        :total-pages.sync="totalPages"
-                        :sort-by.sync="sortBy"
-                        :sort-desc.sync="sortDesc"
-                        :search="search"
-                        :loading="loading">
+                        @delete="deleteItem">
+                    </participant-table-wrapper>
+                </div>
+                <span v-else>
+                    Please select which submission to view from the 'All' tab.
+                </span>
+            </p-tab>
+        </p-tabs>
 
-                </admin-table>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <csv-download
-                    :show.sync="showCsvDownload"
-                    :query-string="queryString"
-                    :activity-instances="items">
-                </csv-download>
-            </b-col>
-        </b-row>
+        <p-modal title="CSV Download" id="csv-download">
+            <csv-download
+                :activity-instances="items">
+            </csv-download>
+        </p-modal>
+
     </div>
 </template>
 
 <script>
-    import AdminTable from './AdminTable';
     import {debounce} from 'lodash';
     import CsvDownload from './CsvDownload';
-    
+    import ParticipantTableWrapper from './ParticipantTableWrapper';
+
     export default {
         name: "Admin",
-        components: {CsvDownload, AdminTable},
+        components: {CsvDownload, ParticipantTableWrapper},
         props: {
             columnSchema: {
                 required: true,
                 type: Object
-            },
-            queryString: {
-                required: true,
-                type: String
             },
             canDownloadCsv: {
                 required: true,
@@ -94,7 +94,7 @@
         created() {
             this.loadItems();
         },
-        
+
         data() {
             return {
                 items: [],
@@ -103,13 +103,16 @@
                 totalPages: 1,
                 sortBy: null,
                 sortDesc: false,
-                loading: false,
                 search: null,
-                showCsvDownload: false,
                 errors: {},
+                allFields: [
+                    {key: 'participant_name', label: 'Name'},
+                    {key: 'rows_count', label: 'Number of Rows'},
+                ],
+                participantRow: null
             }
         },
-        
+
         watch: {
             page() {
                 this.loadItems();
@@ -131,24 +134,42 @@
         },
 
         methods: {
+            loadDetails(row) {
+                this.participantRow = row;
+                this.$refs.tabs.selectTab(1);
+            },
+            updatePageInformation(pageData) {
+                this.page = pageData.page;
+                this.perPage = pageData.size;
+            },
             loadItems() {
-                this.loading = true;
                 this.$http.get('/activity-instance', {
-                    params: this.urlParams
+                    params: this.urlParams,
+                    name: 'loading-activity-instances'
                 })
-                    .then(response => { 
+                    .then(response => {
                         this.items = response.data.data
                         this.page = response.data.current_page;
                         this.totalPages = response.data.last_page;
                     })
                     .catch(error => this.$notify.alert('Could not load row data: ' + error.response.data.message))
-                    .then(() => this.loading = false);
             },
+            deleteItem() {
+                if(this.participantRow) {
+                    let participantRow = _.cloneDeep(this.participantRow);
+                    participantRow.rows_count = (participantRow.rows_count === 0 ? 0 : participantRow.rows_count - 1);
+                    this.items.splice(
+                        this.items.indexOf(this.participantRow),
+                        1,
+                        participantRow
+                    );
+                }
+            }
         },
 
         computed: {
             searchLoading() {
-                return this.loading && this.search !== null && this.search !== ''
+                return this.isLoading('loading-activity-instances') && this.search !== null && this.search !== ''
             },
             urlParams() {
                 let params = {

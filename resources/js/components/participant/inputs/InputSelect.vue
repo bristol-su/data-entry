@@ -1,22 +1,23 @@
 <template>
-    <v-select
-        :options="options"
+    <p-select
+        :select-options="options"
         v-model="contents"
-        :taggable="canAddOptions"
+        :add-own-options="canAddOptions"
         class="form-control"
+        :id="id"
+        :hint="hint"
+        :label="label"
+        :errors="errors"
         :class="extraClasses"
         style="height: auto;">
-        <template v-slot:header>
-            <div v-if="canAddOptions" style="opacity: .8">You may add your own options by typing them below</div>
-        </template>
-    </v-select>
+    </p-select>
 </template>
 
 <script>
     import InputMixin from './InputMixin';
     import 'vue-select/dist/vue-select.css';
     import VSelect from 'vue-select';
-    
+
     export default {
         name: "InputSelect",
 
@@ -25,7 +26,7 @@
         components: {
             VSelect
         },
-        
+
         data() {
             return {}
         },
@@ -34,7 +35,9 @@
 
         computed: {
             options() {
-                return this.configuration.hasOwnProperty('select_options') ? this.configuration.select_options : [];
+                return this.configuration.hasOwnProperty('select_options') ? this.configuration.select_options.map(opt => {
+                    return {id: opt, value: opt}
+                }) : [];
             },
             canAddOptions() {
                 return this.configuration.hasOwnProperty('add_own') ? this.configuration.add_own : false;
