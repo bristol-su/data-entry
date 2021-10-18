@@ -22,10 +22,10 @@ class Select extends ColumnType
     public static function configuration(): Form
     {
         return \FormSchema\Generator\Form::make()->withField(
-            Field::make(ArrayField::class, 'select_options')->label('Select Options')
+            Field::array('select_options')->setLabel('Select Options')
                 ->showRemoveButton(true)
         )->withField(
-            Field::checkBox('add_own')->label('May the user add their own options?')
+            Field::checkBox('add_own')->setLabel('May the user add their own options?')
         )->getSchema();
     }
 

@@ -1,9 +1,11 @@
 <template>
-    <b-form-textarea
+    <p-textarea
+        :id="id"
+        :hint="hint"
+        :label="label"
+        :errors="errors"
         v-model="contents"
-        rows="3"
-        :state="isValid"
-    ></b-form-textarea>
+    ></p-textarea>
 </template>
 
 <script>

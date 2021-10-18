@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - (18/10/2021)
+
+### Added
+- Completion Condition for number of rows added
+- Update to new UI kit
+
 ## [2.0.0] - (12/08/2021)
 
 ### Changed

@@ -9,10 +9,12 @@ use BristolSU\Module\DataEntry\ColumnTypes\LongText;
 use BristolSU\Module\DataEntry\ColumnTypes\Number;
 use BristolSU\Module\DataEntry\ColumnTypes\Select;
 use BristolSU\Module\DataEntry\ColumnTypes\Text;
+use BristolSU\Module\DataEntry\CompletionConditions\NumberOfRowsEntered;
 use BristolSU\Module\DataEntry\Events\RowAdded;
 use BristolSU\Module\DataEntry\Events\RowDeleted;
 use BristolSU\Module\DataEntry\Events\RowUpdated;
 use BristolSU\Module\DataEntry\Field\ColumnTypes;
+use BristolSU\Support\Completion\Contracts\CompletionConditionManager;
 use BristolSU\Support\Module\ModuleServiceProvider as ServiceProvider;
 use FormSchema\Generator\Field;
 use FormSchema\Generator\Group;
@@ -98,6 +100,10 @@ class ModuleServiceProvider extends ServiceProvider
 
     ];
 
+    protected $completionConditions = [
+        'number_of_rows_entered' => NumberOfRowsEntered::class
+    ];
+
     public function alias(): string
     {
         return 'data-entry';
@@ -117,6 +123,7 @@ class ModuleServiceProvider extends ServiceProvider
     {
         parent::boot();
         $this->registerGlobalScript('modules/data-entry/js/components.js');
+
         ColumnTypeStore::add('number', Number::class);
         ColumnTypeStore::add('decimal', Decimal::class);
         ColumnTypeStore::add('select', Select::class);
@@ -138,18 +145,18 @@ class ModuleServiceProvider extends ServiceProvider
     {
         return \FormSchema\Generator\Form::make()->withGroup(
             Group::make('Page Layout')->withField(
-                Field::input('title')->inputType('text')->label('Title')->featured(false)->required(true)
-                    ->default('Page Title')->hint('The title of the page')
-                    ->help('This title will be shown at the top of the page, to help users understand what the module is for')
+                Field::textInput('title')->setLabel('Title')->setRequired(true)
+                    ->setValue('Page Title')->setHint('The title of the page')
+                    ->setTooltip('This title will be shown at the top of the page, to help users understand what the module is for')
             )->withField(
-                Field::input('subtitle')->inputType('text')->label('Subtitle')->featured(false)->required(true)
-                    ->default('Page Subtitle')->hint('The subtitle for the page')
-                    ->help('This subtitle will be shown under the title, and should include more information for users')
+                Field::textInput('subtitle')->setLabel('Subtitle')->setRequired(true)
+                    ->setValue('Page Subtitle')->setHint('The subtitle for the page')
+                    ->setTooltip('This subtitle will be shown under the title, and should include more information for users')
             )
         )->withGroup(
             Group::make('Data')->withField(
                 Field::make(ColumnTypes::class, 'column_types')
-                    ->label('Table Definition')
+                    ->setLabel('Table Definition')
             )
         )->getSchema();
 

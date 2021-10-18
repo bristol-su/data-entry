@@ -22,10 +22,9 @@ export default {
                 return {};
             }
         },
-        isValid: {
-            required: false,
-            type: Boolean,
-            default: null
-        }
+        label: {required: false, type: String},
+        hint: {required: false, type: String},
+        id: {required: true, type: String},
+        errors: {required: false, type: Array, default: () => []}
     },
 }

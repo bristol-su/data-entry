@@ -10,20 +10,18 @@
                 @start="drag = true"
                 @end="drag = false"
         >
-            <transition-group type="transition" :name="!drag ? 'flip-list' : null">
-                <column-selection-button
-                        v-for="(col, uuid) in cols"
-                        :key="'key-' + uuid"
-                        :col="col"
-                        :uuid="uuid"
-                        @click="$emit('input', uuid)"
-                        :currentUuid="value">
-        
-                </column-selection-button>
-            </transition-group>
+            <column-selection-button
+                    v-for="(col, uuid) in cols"
+                    :key="'key-' + uuid"
+                    :col="col"
+                    :uuid="uuid"
+                    @click="$emit('input', uuid)"
+                    :currentUuid="value">
+
+            </column-selection-button>
         </draggable>
         <slot name="append">
-            
+
         </slot>
     </div>
 </template>
@@ -31,7 +29,7 @@
 <script>
     import ColumnSelectionButton from './ColumnSelectionButton';
     import draggable from 'vuedraggable';
-    
+
     export default {
         name: "ColumnSelection",
         components: {ColumnSelectionButton, draggable},

@@ -1,84 +1,22 @@
 <template>
     <div>
         <div v-if="hasColumn">
-            <b-form-group
-                    description="Should the column be visible?"
-                    id="visible-group"
-                    label="Column visible:"
-                    label-for="visible"
-            >
-                <b-form-checkbox
-                        id="visible"
-                        v-model="column.visible"
-                        name="visible"
-                >
-                    {{visibleText}}
-                </b-form-checkbox>
-            </b-form-group>
-            
-            <b-form-group
-                    description="This will show at the top of the table."
-                    id="header-group"
-                    label="Column Header:"
-                    label-for="header"
-            >
-                <b-form-input
-                        id="header"
-                        placeholder="Enter Header"
-                        required
-                        type="text"
-                        v-model="column.header"
-                ></b-form-input>
-            </b-form-group>
-            <b-form-group
-                    description="More information about what the field should contain."
-                    id="hint-group"
-                    label="Column hint:"
-                    label-for="hint"
-            >
-                <b-form-input
-                        id="hint"
-                        placeholder="Enter hint"
-                        required
-                        type="text"
-                        v-model="column.hint"
-                ></b-form-input>
-            </b-form-group>
+            <p-dynamic-form :schema="columnForm" v-model="column">
 
-            <b-form-group
-                    description="The type of the field."
-                    id="type-group"
-                    label="Column type:"
-                    label-for="type"
-            >
-                <b-form-select
-                        :options="fieldTypes"
-                        id="type"
-                        required
-                        v-model="column.type">
-                    <template v-slot:first>
-                        <b-form-select-option :value="null" disabled>
-                            -- Please select a field type --
-                        </b-form-select-option>
-                    </template>
-                </b-form-select>
-            </b-form-group>
+            </p-dynamic-form>
 
-            <vue-form-generator 
+            <p-dynamic-form
                 v-if="hasAdditionalConfiguration"
-                :schema="configuration.schema" 
-                :model="filledConfiguration"
-                :options="configuration.options">
-            </vue-form-generator>
+                :schema="configuration"
+                v-model="filledConfiguration">
+            </p-dynamic-form>
 
-            <div class="border">
-                <column-validation 
-                    v-model="column.validation"
-                    :rules="rules">
-                    
-                </column-validation>
-            </div>
-            
+            <column-validation
+                :value="column.validation"
+                @input="setColValidation"
+                :rules="rules">
+            </column-validation>
+
         </div>
         <div v-else>
             Please select a column
@@ -88,12 +26,11 @@
 </template>
 
 <script>
-    import VueFormGenerator from 'vue-form-generator'
     import ColumnValidation from './ColumnValidation';
-    
+
     export default {
         name: "ColumnDetails",
-        components: {ColumnValidation, "vue-form-generator": VueFormGenerator.component},
+        components: {ColumnValidation},
         props: {
             value: {
                 required: false,
@@ -130,6 +67,14 @@
             }
         },
 
+        methods: {
+            setColValidation(validation) {
+                let col = _.cloneDeep(this.column);
+                col.validation = validation;
+                this.column = col;
+            }
+        },
+
         computed: {
             column: {
                 get() {
@@ -157,7 +102,7 @@
                     if(this.column.visible) {
                         return 'Visible';
                     }
-                    return 'Hidden';    
+                    return 'Hidden';
                 }
                 return null;
             },
@@ -171,18 +116,57 @@
                 return null;
             },
             filledConfiguration: {
-                get() { 
+                get() {
                     if(this.hasColumn) {
                         if(Object.keys(this.column.configuration).length === 0) {
-                            this.column.configuration = {};
+                            return {};
                         }
-                        return VueFormGenerator.schema.createDefaultObject(this.configuration.schema, this.column.configuration);
+                        return this.column.configuration;
                     }
                     return null
                 },
                 set(val) {
-                    this.column.configuration = val;
+                    let col = _.cloneDeep(this.column);
+                    col.configuration = val;
+                    this.column = col;
                 }
+            },
+            fieldSelectOptions() {
+                return this.fieldTypes.map(f => {
+                    return {id: f.value, value: f.text};
+                })
+            },
+            columnForm() {
+                return this.$tools.generator.form.newForm()
+                    .withGroup(
+                        this.$tools.generator.group.newGroup()
+                            .withField(
+                                this.$tools.generator.field.checkbox('visible')
+                                    .label('Column visible?')
+                                    .value(true)
+                                    .hint('Should the column be visible?')
+                            )
+                            .withField(
+                                this.$tools.generator.field.text('header')
+                                    .label('Column name')
+                                    .hint('This will show in the table header')
+                                    .required(true)
+                            )
+                            .withField(
+                                this.$tools.generator.field.text('hint')
+                                    .label('Column Hint')
+                                    .hint('Some more information about what the field should contain')
+                                    .required(true)
+                            )
+                            .withField(
+                                this.$tools.generator.field.select('type')
+                                    .label('Column Type')
+                                    .hint('The type of the column')
+                                    .required(true)
+                                    .nullLabel('-- Please select a field type --')
+                                    .setOptions(this.fieldSelectOptions)
+                            )
+                    )
             }
         }
     }
